@@ -12,24 +12,41 @@ namespace dae
 		//SPHERE HIT-TESTS
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W1
+			// Calculate the vector from the ray's origin to the sphere's center
+			Vector3 oc = ray.origin - sphere.origin;
 
 			float a = Vector3::Dot(ray.direction, ray.direction);
-			float b = Vector3::Dot(2 * ray.direction, ray.origin - sphere.origin);
-			float c = Vector3::Dot(ray.origin - sphere.origin, ray.origin - sphere.origin) - sphere.radius * sphere.radius;
-			double discriminant = b * b - 4 * a * c;
+			float b = Vector3::Dot(oc, ray.direction);
+			float c = Vector3::Dot(oc, oc) - sphere.radius * sphere.radius;
+			float discriminant = b * b - a * c;
 
 			if (discriminant > 0)
 			{
-				float sqrtD = sqrt(discriminant);
+				float sqrtD = sqrtf(discriminant);
 
-				float t = (-b - sqrtD) / (2 * a);
-				//dont know why 
-
-				hitRecord.t = t;
-				hitRecord.materialIndex = sphere.materialIndex;
+				// Find the nearest root that is in the acceptable range
+				float t = (-b - sqrtD) / a;
+				if (t < ray.min)
+				{
+					t = (-b + sqrtD) / a;
+				}
+				else
+				{
+					t = (-b - sqrtD) / a;
+				}
+				if (t < hitRecord.t && (ignoreHitRecord || t > 0))
+				{
+					// Update hitRecord
+					hitRecord.t = t;
+					hitRecord.origin = ray.origin + ray.direction * t;
+					hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+					hitRecord.didHit = true;
+					hitRecord.materialIndex = sphere.materialIndex;
+					return true;
+				}
 			}
-			return hitRecord.didHit = discriminant > 0;
+
+			return false;
 		}
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
 		{
@@ -37,14 +54,31 @@ namespace dae
 
 			return HitTest_Sphere(sphere, ray, temp, true);
 		}
-
+			
+		
 #pragma endregion
 #pragma region Plane HitTest
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W1
-			assert(false && "No Implemented Yet!");
+			float dotPlaneRay = Vector3::Dot(plane.normal, ray.direction);
+
+			if (std::abs(dotPlaneRay) < 1e-6) {
+				// Ray is parallel to the plane
+				return false;
+			}
+			float t = Vector3::Dot(plane.normal, (plane.origin - ray.origin)) / dotPlaneRay;
+
+			if (t >= ray.min && t < ray.max && !ignoreHitRecord) {
+				hitRecord.didHit = true;
+				hitRecord.t = t;
+				hitRecord.origin = ray.direction * t;
+				hitRecord.materialIndex = plane.materialIndex;
+
+				hitRecord.normal = plane.normal;
+			}
+
 			return false;
 		}
 

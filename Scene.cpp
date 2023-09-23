@@ -30,13 +30,29 @@ namespace dae {
 	{
 		//todo W1
 		
-		for (const auto& sphere : m_SphereGeometries)
+		for (const Sphere& sphere : m_SphereGeometries)
 		{
-			GeometryUtils::HitTest_Sphere(sphere, ray, closestHit);
+			HitRecord hit{};
+			GeometryUtils::HitTest_Sphere(sphere, ray, hit);
+			//choosing the closest intersection point to camera
+			if (hit.t < closestHit.t)
+			{
+				closestHit = hit;
+				
+			}
 
 		}
-		
-		//assert(false && "No Implemented Yet!");
+		for (const Plane& plane : m_PlaneGeometries)
+		{
+			HitRecord hit{};
+			GeometryUtils::HitTest_Plane(plane, ray, hit);
+			//choosing the closest intersection point to camera
+			if (hit.t < closestHit.t)
+			{
+				closestHit = hit;
+				
+			}
+		}
 	}
 
 	bool Scene::DoesHit(const Ray& ray) const

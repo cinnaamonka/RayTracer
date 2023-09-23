@@ -45,20 +45,20 @@ void Renderer::Render(Scene* pScene) const
 			//Geometry hit test
 			HitRecord closestHit{};
 			ColorRGB finalColor{};
-
-			//GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);//previous code
+			//Plane testPlane{ {0.f,-50.f,0.f},{0.f,1.f,0.f},0 };
+			//GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);//previous code
 			pScene->GetClosestHit(viewRay, closestHit);
-			
+
 			if (closestHit.didHit)
 			{
 				finalColor = materials[closestHit.materialIndex]->Shade();
-				
+
 				/*const float scaled_t = (closestHit.t - 50.f) / 40.0f;//previous code
 				finalColor = { scaled_t ,scaled_t ,scaled_t };*/
 			}
 			//Update Color in Buffer
 			finalColor.MaxToOne();
-			
+
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
 				static_cast<uint8_t>(finalColor.r * 255),
 				static_cast<uint8_t>(finalColor.g * 255),
