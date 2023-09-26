@@ -29,32 +29,32 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 	float aspectRatio = m_Width / static_cast<float>(m_Height);
 
+	Vector3 right = { 1.0f,0.0f,0.0f };
+	Vector3 up = { 0.0f,1.0f,0.0f };
+	Vector3 forward = { 0.0f,0.0f,1.0f };
+
+
 	for (int px{}; px < m_Width; ++px)
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			float x = ((2.f * (static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width)) - 1.f) * aspectRatio;
-			float y = 1.f - ((2.f * static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height));
-			Vector3 viewRayDirection = { x,y,1.f };
+			float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
+
+			float cx = (((2.f * (static_cast<float>(px) + 0.5f)) / static_cast<float>(m_Width)) - 1.f) * aspectRatio * FOV;
+			float cy = (1.f - ((2.f * static_cast<float>(py) + 0.5f)) / static_cast<float>(m_Height)) * FOV;
+			Vector3 viewRayDirection = { cx * right + cy * up + forward };
 
 			viewRayDirection.Normalize();
-			Ray viewRay = Ray({}, viewRayDirection);
-
-			//ColorRGB finalColor{ viewRayDirection.x,viewRayDirection.y,viewRayDirection.z };
+			Ray viewRay = Ray(camera.origin, viewRayDirection);
 
 			//Geometry hit test
 			HitRecord closestHit{};
 			ColorRGB finalColor{};
-			//Plane testPlane{ {0.f,-50.f,0.f},{0.f,1.f,0.f},0 };
-			//GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);//previous code
 			pScene->GetClosestHit(viewRay, closestHit);
 
 			if (closestHit.didHit)
 			{
 				finalColor = materials[closestHit.materialIndex]->Shade();
-
-				/*const float scaled_t = (closestHit.t - 50.f) / 40.0f;//previous code
-				finalColor = { scaled_t ,scaled_t ,scaled_t };*/
 			}
 			//Update Color in Buffer
 			finalColor.MaxToOne();
