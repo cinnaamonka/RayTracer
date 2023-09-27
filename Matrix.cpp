@@ -102,11 +102,11 @@ namespace dae {
 		return data[3];
 	}
 
+
 	Matrix Matrix::CreateTranslation(float x, float y, float z)
 	{
-		//todo W2
-		assert(false && "Not Implemented Yet");
-		return {};
+
+		return { Vector3::UnitX, Vector3::UnitY, Vector3::UnitZ, Vector3{x,y,z} };
 	}
 
 	Matrix Matrix::CreateTranslation(const Vector3& t)
@@ -116,30 +116,52 @@ namespace dae {
 
 	Matrix Matrix::CreateRotationX(float pitch)
 	{
-		//todo W2
-		assert(false && "Not Implemented Yet");
-		return {};
+
+		//assert(false && "Not Implemented Yet");
+		return { Vector3::UnitX, Vector3{0,cos(pitch),sin(pitch)}, Vector3{0,-sin(pitch),cos(pitch)},Vector3{0,0,0} };
 	}
 
 	Matrix Matrix::CreateRotationY(float yaw)
 	{
-		//todo W2
-		assert(false && "Not Implemented Yet");
-		return {};
+
+		//assert(false && "Not Implemented Yet");
+		return { 
+			Vector3{cos(yaw),0,-sin(yaw)},
+			Vector3{0,1,0},
+			Vector3{sin(yaw),0,cos(yaw)},
+			Vector3{0,0,0} };
 	}
 
 	Matrix Matrix::CreateRotationZ(float roll)
 	{
-		//todo W2
-		assert(false && "Not Implemented Yet");
-		return {};
+
+		//assert(false && "Not Implemented Yet");
+		return { Vector3{cos(roll),sin(roll),0}, Vector3{-sin(roll),cos(roll),0}, Vector3{0,0,1},Vector3{0,0,0} };
 	}
 
 	Matrix Matrix::CreateRotation(const Vector3& r)
 	{
-		//todo W2
+
+		Matrix rotationMatrix;
+
+		// Convert Euler angles to radians
+		float pitch = dae::TO_RADIANS * r.x;
+		float yaw = r.y * dae::TO_RADIANS;
+		float roll = r.z * dae::TO_RADIANS;
+
+		// Calculate the rotation matrix
+		rotationMatrix[0][0] = cosf(yaw) * cosf(roll);
+		rotationMatrix[0][1] = cosf(yaw) * sinf(roll);
+		rotationMatrix[0][2] = -sinf(yaw);
+		rotationMatrix[1][0] = sinf(pitch) * sinf(yaw) * cosf(roll) - cosf(pitch) * sinf(roll);
+		rotationMatrix[1][1] = sinf(pitch) * sinf(yaw) * sinf(roll) + cosf(pitch) * cosf(roll);
+		rotationMatrix[1][2] = sinf(pitch) * cosf(yaw);
+		rotationMatrix[2][0] = cosf(pitch) * sinf(yaw) * cosf(roll) + sinf(pitch) * sinf(roll);
+		rotationMatrix[2][1] = cosf(pitch) * sinf(yaw) * sinf(roll) - sinf(pitch) * cosf(roll);
+		rotationMatrix[2][2] = cosf(pitch) * cosf(yaw);
+
+		return rotationMatrix;
 		assert(false && "Not Implemented Yet");
-		return {};
 	}
 
 	Matrix Matrix::CreateRotation(float pitch, float yaw, float roll)
@@ -149,9 +171,10 @@ namespace dae {
 
 	Matrix Matrix::CreateScale(float sx, float sy, float sz)
 	{
-		//todo W2
+		
+
 		assert(false && "Not Implemented Yet");
-		return {};
+		return { Vector3(sx,0,0), Vector3{0,sy,0}, Vector3{0,0,sz},Vector3{0,0,1} };
 	}
 
 	Matrix Matrix::CreateScale(const Vector3& s)

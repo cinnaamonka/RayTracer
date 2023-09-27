@@ -33,6 +33,7 @@ void Renderer::Render(Scene* pScene) const
 	Vector3 up = { 0.0f,1.0f,0.0f };
 	Vector3 forward = { 0.0f,0.0f,1.0f };
 
+	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
 	for (int px{}; px < m_Width; ++px)
 	{
@@ -45,7 +46,10 @@ void Renderer::Render(Scene* pScene) const
 			Vector3 viewRayDirection = { cx * right + cy * up + forward };
 
 			viewRayDirection.Normalize();
-			Ray viewRay = Ray(camera.origin, viewRayDirection);
+
+			Vector3 cameraSpaceDirection = { cx,cy,1.0 };
+
+			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
 
 			//Geometry hit test
 			HitRecord closestHit{};
