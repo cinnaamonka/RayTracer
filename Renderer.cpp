@@ -33,6 +33,8 @@ void Renderer::Render(Scene* pScene) const
 	Vector3 up = { 0.0f,1.0f,0.0f };
 	Vector3 forward = { 0.0f,0.0f,1.0f };
 
+
+
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
 	for (int px{}; px < m_Width; ++px)
@@ -46,7 +48,6 @@ void Renderer::Render(Scene* pScene) const
 			Vector3 viewRayDirection = { cx * right + cy * up + forward };
 
 			viewRayDirection.Normalize();
-
 			Vector3 cameraSpaceDirection = { cx,cy,1.0 };
 
 			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
@@ -59,8 +60,31 @@ void Renderer::Render(Scene* pScene) const
 			if (closestHit.didHit)
 			{
 				finalColor = materials[closestHit.materialIndex]->Shade();
+
+				for (const Light& light : lights)
+				{
+					{
+						Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
+						const float lightDistance = lightDirection.Normalize();
+
+						const Ray lightRay{
+							closestHit.origin + closestHit.normal * 0.01f,
+							lightDirection, 0.0001f, lightDistance
+						};
+
+						if (pScene->DoesHit(lightRay))
+						{
+							finalColor *= 0.5;
+							break;
+						}
+					}
+				}
+
+				//Update Color in Buffer
+
 			}
-			//Update Color in Buffer
+
+
 			finalColor.MaxToOne();
 
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
@@ -68,13 +92,13 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.g * 255),
 				static_cast<uint8_t>(finalColor.b * 255));
 		}
-	}
 
+	}
 	//@END
 	//Update SDL Surface
 	SDL_UpdateWindowSurface(m_pWindow);
-}
 
+}
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");

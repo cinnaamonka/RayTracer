@@ -81,7 +81,7 @@ namespace dae
 
 			float rotationSpeed{ 1.15f };
 
-			std::cout << mouseX << std::endl;
+			
 			if (mouseState == SDL_BUTTON_LEFT)
 			{
 				totalYaw += float(mouseY) * rotationSpeed;

@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Math.h"
 #include "DataTypes.h"
+#include <iostream>
 
 namespace dae
 {
@@ -54,8 +55,8 @@ namespace dae
 
 			return HitTest_Sphere(sphere, ray, temp, true);
 		}
-			
-		
+
+
 #pragma endregion
 #pragma region Plane HitTest
 		//PLANE HIT-TESTS
@@ -73,7 +74,7 @@ namespace dae
 			if (t >= ray.min && t < ray.max && !ignoreHitRecord) {
 				hitRecord.didHit = true;
 				hitRecord.t = t;
-				hitRecord.origin = ray.direction * t;
+				hitRecord.origin = ray.origin + ray.direction * t;
 				hitRecord.materialIndex = plane.materialIndex;
 
 				hitRecord.normal = plane.normal;
@@ -124,15 +125,16 @@ namespace dae
 		//Direction from target to light
 		inline Vector3 GetDirectionToLight(const Light& light, const Vector3 origin)
 		{
-			//todo W3
-			assert(false && "No Implemented Yet!");
-			return {};
+			Vector3 direction = { light.origin - origin };
+			
+
+			return  direction;
 		}
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
 			//todo W3
-			assert(false && "No Implemented Yet!");
+
 			return {};
 		}
 	}
