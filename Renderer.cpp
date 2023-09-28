@@ -29,23 +29,19 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 	float aspectRatio = m_Width / static_cast<float>(m_Height);
 
-	Vector3 right = { 1.0f,0.0f,0.0f };
-	Vector3 up = { 0.0f,1.0f,0.0f };
-	Vector3 forward = { 0.0f,0.0f,1.0f };
-
-
-
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
+
+	float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
 
 	for (int px{}; px < m_Width; ++px)
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
+			
 
 			float cx = (((2.f * (static_cast<float>(px) + 0.5f)) / static_cast<float>(m_Width)) - 1.f) * aspectRatio * FOV;
 			float cy = (1.f - ((2.f * static_cast<float>(py) + 0.5f)) / static_cast<float>(m_Height)) * FOV;
-			Vector3 viewRayDirection = { cx * right + cy * up + forward };
+			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
 
 			viewRayDirection.Normalize();
 			Vector3 cameraSpaceDirection = { cx,cy,1.0 };
@@ -67,20 +63,19 @@ void Renderer::Render(Scene* pScene) const
 						Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
 						const float lightDistance = lightDirection.Normalize();
 
-						const Ray lightRay{
+						const Ray lightRay
+						{
 							closestHit.origin + closestHit.normal * 0.01f,
 							lightDirection, 0.0001f, lightDistance
 						};
 
 						if (pScene->DoesHit(lightRay))
 						{
-							finalColor *= 0.5;
+							finalColor *= 0.5f;
 							break;
 						}
 					}
 				}
-
-				//Update Color in Buffer
 
 			}
 
