@@ -37,8 +37,6 @@ void Renderer::Render(Scene* pScene) const
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			
-
 			float cx = (((2.f * (static_cast<float>(px) + 0.5f)) / static_cast<float>(m_Width)) - 1.f) * aspectRatio * FOV;
 			float cy = (1.f - ((2.f * static_cast<float>(py) + 0.5f)) / static_cast<float>(m_Height)) * FOV;
 			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
@@ -55,30 +53,40 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				finalColor = materials[closestHit.materialIndex]->Shade();
+				//finalColor = materials[closestHit.materialIndex]->Shade();
 
 				for (const Light& light : lights)
 				{
+					Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
+					Vector3 directionHitToLight = light.origin - startingPoint;
+
+					const float distance{ directionHitToLight.Magnitude() };
+
+					Ray lightRay
 					{
-						Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
-						const float lightDistance = lightDirection.Normalize();
+						startingPoint,
+						directionHitToLight.Normalized()
+					};
 
-						const Ray lightRay
-						{
-							closestHit.origin + closestHit.normal * 0.01f,
-							lightDirection, 0.0001f, lightDistance
-						};
+					lightRay.max = distance;
 
-						if (pScene->DoesHit(lightRay))
+					HitRecord lightHit{};
+
+					pScene->GetClosestHit(lightRay, lightHit);
+
+
+					if (!lightHit.didHit || !m_ShadowsEnabled) {
+
+						float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
+
+						if (cosAngle >= 0)
 						{
-							finalColor *= 0.5f;
-							break;
+							finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
 						}
 					}
+
 				}
-
 			}
-
 
 			finalColor.MaxToOne();
 
@@ -97,4 +105,10 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+void Renderer::CycleLightingMode()
+{
+	int currentLightingMode = static_cast<int>(m_CurrentLightingMode);
+	currentLightingMode %= 3;
+	m_CurrentLightingMode = LightingMode{ currentLightingMode };
 }
