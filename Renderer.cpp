@@ -89,7 +89,7 @@ void Renderer::Render(Scene* pScene) const
 						}
 						case LightingMode::Radiance:
 						{
-							finalColor += LightUtils::GetRadiance(light, lightHit.origin);
+							finalColor += LightUtils::GetRadiance(light, closestHit.origin);
 							break;
 						}
 			
