@@ -65,7 +65,9 @@ void Renderer::Render(Scene* pScene) const
 					Ray lightRay
 					{
 						startingPoint,
-						directionHitToLight.Normalized()
+						directionHitToLight.Normalized(),
+						0.0001f,
+						distance
 					};
 
 					lightRay.max = distance;
