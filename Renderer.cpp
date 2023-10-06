@@ -74,20 +74,32 @@ void Renderer::Render(Scene* pScene) const
 
 					pScene->GetClosestHit(lightRay, lightHit);
 
+					float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
 
-					if (!lightHit.didHit || !m_ShadowsEnabled) {
+					if (cosAngle < 0) continue;
 
-						float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
-
-						if (cosAngle >= 0)
+					if (!lightHit.didHit || !m_ShadowsEnabled)
+					{
+						switch (m_CurrentLightingMode)
+						{
+						case LightingMode::ObservedArea:
 						{
 							finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
+							break;
 						}
+						case LightingMode::Radiance:
+						{
+							finalColor += LightUtils::GetRadiance(light, lightHit.origin);
+							break;
+						}
+			
+						}
+						
 					}
-
+					
 				}
 			}
-
+		 
 			finalColor.MaxToOne();
 
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
@@ -109,6 +121,9 @@ bool Renderer::SaveBufferToImage() const
 void Renderer::CycleLightingMode()
 {
 	int currentLightingMode = static_cast<int>(m_CurrentLightingMode);
-	currentLightingMode %= 3;
+
+	++currentLightingMode %= 4;
+
 	m_CurrentLightingMode = LightingMode{ currentLightingMode };
+
 }

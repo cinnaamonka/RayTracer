@@ -204,7 +204,7 @@ namespace dae {
 #pragma region SCENE 3
 	void Scene_W3::Initialize()
 	{
-		m_Camera.origin = { 0.f, 1.f, -5.f };
+		m_Camera.origin = { 0.f, 3.f, -9.f };
 		m_Camera.fovAngle = 45.f;
 
 		//default: Material id0 >> SolidColor Material (RED)

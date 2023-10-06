@@ -40,8 +40,11 @@ namespace dae
 			Combined
 
 		};
+		
+
 
 		LightingMode m_CurrentLightingMode = { LightingMode::ObservedArea };
+
 
 		int m_Width{};
 		int m_Height{};
