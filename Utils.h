@@ -35,7 +35,7 @@ namespace dae
 				{
 					t = (-b - sqrtD) / a;
 				}
-				if (t < hitRecord.t && (ignoreHitRecord || t > 0))
+				if (t < ray.max and t > ray.min && !ignoreHitRecord)
 				{
 					// Update hitRecord
 					hitRecord.t = t;
@@ -78,6 +78,8 @@ namespace dae
 				hitRecord.materialIndex = plane.materialIndex;
 
 				hitRecord.normal = plane.normal;
+
+				return true;
 			}
 
 			return false;
