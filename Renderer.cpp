@@ -60,7 +60,11 @@ void Renderer::Render(Scene* pScene) const
 					Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
 					Vector3 directionHitToLight = light.origin - startingPoint;
 
+
 					const float distance{ directionHitToLight.Magnitude() };
+
+					Vector3 l = (closestHit.origin - light.origin).Normalized();
+					Vector3 v = (viewRay.direction).Normalized() * (-1.f);
 
 					Ray lightRay
 					{
@@ -94,14 +98,25 @@ void Renderer::Render(Scene* pScene) const
 							finalColor += LightUtils::GetRadiance(light, closestHit.origin);
 							break;
 						}
-			
+						case LightingMode::BRDF:
+						{
+							finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
+							break;
 						}
-						
+						case LightingMode::Combined:
+						{
+							finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *
+								materials[closestHit.materialIndex]->Shade(closestHit, l, v) *
+								cosAngle);
+							break;
+						}
+						}
+
 					}
-					
+
 				}
 			}
-		 
+
 			finalColor.MaxToOne();
 
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,

@@ -34,7 +34,7 @@ namespace dae
 	class Material_SolidColor final : public Material
 	{
 	public:
-		Material_SolidColor(const ColorRGB& color): m_Color(color)
+		Material_SolidColor(const ColorRGB& color) : m_Color(color)
 		{
 		}
 
@@ -44,7 +44,7 @@ namespace dae
 		}
 
 	private:
-		ColorRGB m_Color{colors::White};
+		ColorRGB m_Color{ colors::White };
 	};
 #pragma endregion
 
@@ -55,18 +55,17 @@ namespace dae
 	{
 	public:
 		Material_Lambert(const ColorRGB& diffuseColor, float diffuseReflectance) :
-			m_DiffuseColor(diffuseColor), m_DiffuseReflectance(diffuseReflectance){}
+			m_DiffuseColor(diffuseColor), m_DiffuseReflectance(diffuseReflectance) {}
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor);
 		}
 
 	private:
-		ColorRGB m_DiffuseColor{colors::White};
-		float m_DiffuseReflectance{1.f}; //kd
+		ColorRGB m_DiffuseColor{ colors::White };
+		float m_DiffuseReflectance{ 1.f }; //kd
 	};
 #pragma endregion
 
@@ -76,7 +75,7 @@ namespace dae
 	class Material_LambertPhong final : public Material
 	{
 	public:
-		Material_LambertPhong(const ColorRGB& diffuseColor, float kd, float ks, float phongExponent):
+		Material_LambertPhong(const ColorRGB& diffuseColor, float kd, float ks, float phongExponent) :
 			m_DiffuseColor(diffuseColor), m_DiffuseReflectance(kd), m_SpecularReflectance(ks),
 			m_PhongExponent(phongExponent)
 		{
@@ -84,16 +83,18 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
+			
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor) +
+				   BRDF::Phong(m_SpecularReflectance, m_PhongExponent, l, v, hitRecord.normal);
 			assert(false && "Not Implemented Yet");
 			return {};
 		}
 
 	private:
-		ColorRGB m_DiffuseColor{colors::White};
-		float m_DiffuseReflectance{0.5f}; //kd
-		float m_SpecularReflectance{0.5f}; //ks
-		float m_PhongExponent{1.f}; //Phong Exponent
+		ColorRGB m_DiffuseColor{ colors::White };
+		float m_DiffuseReflectance{ 0.5f }; //kd
+		float m_SpecularReflectance{ 0.5f }; //ks
+		float m_PhongExponent{ 1.f }; //Phong Exponent
 	};
 #pragma endregion
 
@@ -102,7 +103,7 @@ namespace dae
 	class Material_CookTorrence final : public Material
 	{
 	public:
-		Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness):
+		Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness) :
 			m_Albedo(albedo), m_Metalness(metalness), m_Roughness(roughness)
 		{
 		}
@@ -115,9 +116,9 @@ namespace dae
 		}
 
 	private:
-		ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
-		float m_Metalness{1.0f};
-		float m_Roughness{0.1f}; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
+		ColorRGB m_Albedo{ 0.955f, 0.637f, 0.538f }; //Copper
+		float m_Metalness{ 1.0f };
+		float m_Roughness{ 0.1f }; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
 	};
 #pragma endregion
 }
