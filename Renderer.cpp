@@ -99,7 +99,7 @@ void Renderer::Render(Scene* pScene) const
 						}
 						case LightingMode::BRDF:
 						{
-							finalColor += materials[closestHit.materialIndex]->Shade(lightHit, l, v);
+							finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, -v);
 							break;
 						}
 						case LightingMode::Combined:
