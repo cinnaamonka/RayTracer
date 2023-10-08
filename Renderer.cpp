@@ -45,7 +45,7 @@ void Renderer::Render(Scene* pScene) const
 			Vector3 cameraSpaceDirection = { cx,cy,1.0 };
 
 			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
-
+			Vector3 v = viewRay.direction.Normalized() * (-1.0f);
 			//Geometry hit test
 			HitRecord closestHit{};
 			ColorRGB finalColor{};
@@ -53,7 +53,6 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				//finalColor = materials[closestHit.materialIndex]->Shade();
 
 				for (const Light& light : lights)
 				{
@@ -63,8 +62,8 @@ void Renderer::Render(Scene* pScene) const
 
 					const float distance{ directionHitToLight.Magnitude() };
 
-					Vector3 l = (closestHit.origin - light.origin).Normalized();
-					Vector3 v = (viewRay.direction).Normalized() * (-1.f);
+					Vector3 l = (light.origin - closestHit.origin).Normalized();
+					
 
 					Ray lightRay
 					{
@@ -100,7 +99,7 @@ void Renderer::Render(Scene* pScene) const
 						}
 						case LightingMode::BRDF:
 						{
-							finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
+							finalColor += materials[closestHit.materialIndex]->Shade(lightHit, l, v);
 							break;
 						}
 						case LightingMode::Combined:

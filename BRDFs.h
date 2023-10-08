@@ -16,7 +16,7 @@ namespace dae
 
 			ColorRGB p = kd * cd;
 
-			return { p / M_PI };
+			return p / float(M_PI);
 		}
 
 		static ColorRGB Lambert(const ColorRGB& kd, const ColorRGB& cd)
@@ -24,8 +24,7 @@ namespace dae
 
 			ColorRGB p = kd * cd;
 
-			return { p / M_PI };
-			return {};
+			return p / float(M_PI);
 		}
 
 		/**
@@ -43,7 +42,7 @@ namespace dae
 			const float cosAlpha{ std::max(Vector3::Dot(reflect,v),0.0f) };
 
 			ColorRGB color = (ks * powf(cosAlpha, exp)) * colors::White;
-			return { (ks * powf(cosAlpha, exp)) * colors::White };
+			return (ks * powf(cosAlpha, exp)) * colors::White;
 
 		}
 
@@ -56,9 +55,8 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+		
+			return f0 + (1.0f - f0) * powf(1.0f - Vector3::Dot(h, v), 5);
 		}
 
 		/**
@@ -70,9 +68,13 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			float a = powf(Vector3::Dot(n, h), 2);
+			float b = roughness * roughness - 1;
+			float c = float(M_PI * powf(a * b + 1, 2));
+
+			float N = (roughness * roughness) / c;
+
+			return N;
 		}
 
 
@@ -85,9 +87,11 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			float Kdirect = (powf((roughness + 1), 2)) / 8;
+
+			float G = Vector3::Dot(n, v) / ((Vector3::Dot(n, v) * (1 - Kdirect)) + Kdirect);
+
+			return G;
 		}
 
 		/**

@@ -3,6 +3,7 @@
 #include "DataTypes.h"
 #include "BRDFs.h"
 
+#include <iostream>
 namespace dae
 {
 #pragma region Material BASE
@@ -83,9 +84,9 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			
+
 			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor) +
-				   BRDF::Phong(m_SpecularReflectance, m_PhongExponent, l, v, hitRecord.normal);
+				BRDF::Phong(m_SpecularReflectance, m_PhongExponent, l, v, hitRecord.normal);
 			assert(false && "Not Implemented Yet");
 			return {};
 		}
@@ -110,9 +111,29 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+		
+			ColorRGB f0 = (m_Metalness == 0.0f) ? ColorRGB(0.04f, 0.04f, 0.04f) : m_Albedo;
+
+			Vector3 halfVector = (l + v) / ((l + v).Magnitude());
+
+			ColorRGB F = BRDF::FresnelFunction_Schlick(halfVector, v, f0);
+
+			float D = BRDF::NormalDistribution_GGX(hitRecord.normal, v, m_Roughness);
+
+			float G = BRDF::GeometryFunction_SchlickGGX(hitRecord.normal, v, m_Roughness);
+
+			ColorRGB specular = (F * D * G) / (4.0f * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
+
+			specular.MaxToOne();
+
+			ColorRGB kdRGB = ColorRGB{ 1,1,1 } - F;
+			ColorRGB kd = m_Metalness == 0.0f ? ColorRGB(0, 0, 0) : kdRGB;
+
+			ColorRGB diffuse = BRDF::Lambert(kd, m_Albedo);
+
+			ColorRGB finalColor = diffuse + specular;
+
+			return F;
 		}
 
 	private:

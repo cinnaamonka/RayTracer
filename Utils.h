@@ -70,7 +70,7 @@ namespace dae
 				return false;
 			}
 			float t = Vector3::Dot(plane.normal, (plane.origin - ray.origin)) / dotPlaneRay;
-
+		
 			if (t >= ray.min && t < ray.max && !ignoreHitRecord) {
 				hitRecord.didHit = true;
 				hitRecord.t = t;
