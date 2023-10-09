@@ -68,11 +68,18 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			float a = powf(Vector3::Dot(n, h), 2);
-			float b = roughness * roughness - 1;
-			float c = float(M_PI * powf(a * b + 1, 2));
 
-			float N = (roughness * roughness) / c;
+			const float dividend = Square(roughness);
+
+			const float dotNHSquared = Square(Vector3::Dot(n, h));
+
+			const float b = Square(dividend) - 1;
+
+			const float c = (dotNHSquared * b) + 1;
+
+			const float divisor = M_PI * Square(c);
+
+			const float N = Square(dividend) / divisor;
 
 			return N;
 		}
