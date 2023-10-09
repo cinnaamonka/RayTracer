@@ -63,7 +63,7 @@ void Renderer::Render(Scene* pScene) const
 					const float distance{ directionHitToLight.Magnitude() };
 
 					Vector3 l = (light.origin - closestHit.origin).Normalized();
-					
+
 
 					Ray lightRay
 					{
@@ -75,43 +75,40 @@ void Renderer::Render(Scene* pScene) const
 
 					lightRay.max = distance;
 
-					HitRecord lightHit{};
-
-					pScene->GetClosestHit(lightRay, lightHit);
-
 					float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
 
-					if (cosAngle < 0) continue;
 
-					if (!lightHit.didHit || !m_ShadowsEnabled)
+					if (m_ShadowsEnabled && pScene->DoesHit(lightRay)) continue;
+
+					switch (m_CurrentLightingMode)
 					{
-						switch (m_CurrentLightingMode)
-						{
-						case LightingMode::ObservedArea:
-						{
-							finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
-							break;
-						}
-						case LightingMode::Radiance:
-						{
-							finalColor += LightUtils::GetRadiance(light, closestHit.origin);
-							break;
-						}
-						case LightingMode::BRDF:
-						{
-							finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, -v);
-							break;
-						}
-						case LightingMode::Combined:
-						{
-							finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *
-								materials[closestHit.materialIndex]->Shade(closestHit, l, v) *
-								cosAngle);
-							break;
-						}
-						}
-
+					case LightingMode::ObservedArea:
+					{
+						if (cosAngle < 0) continue;
+						finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
+						break;
 					}
+					case LightingMode::Radiance:
+					{
+						finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+						break;
+					}
+					case LightingMode::BRDF:
+					{
+						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
+						break;
+					}
+					case LightingMode::Combined:
+					{
+						if (cosAngle < 0) continue;
+						finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *
+							materials[closestHit.materialIndex]->Shade(closestHit, l, v) *
+							cosAngle);
+						break;
+					}
+					}
+
+
 
 				}
 			}
