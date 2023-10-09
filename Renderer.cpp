@@ -12,7 +12,7 @@
 using namespace dae;
 
 const int ALL_NUM_THREADS = std::thread::hardware_concurrency();
-const int NUM_THREADS = ALL_NUM_THREADS - ALL_NUM_THREADS / 4;
+const int NUM_THREADS = ALL_NUM_THREADS - ALL_NUM_THREADS / 2;
 
 Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow(pWindow),
@@ -61,10 +61,12 @@ void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRati
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
 
-	for (int px = 0; px < m_Width; ++px) {
+	for (int px = 0; px < m_Width; ++px) 
+	{
 		float cx = (((2.0f * (static_cast<float>(px) + 0.5f)) * reciprocalWidth) - 1.0f) * aspectRatioFOV;
 
-		for (int py = startY; py < endY; ++py) {
+		for (int py = startY; py < endY; ++py) 
+		{
 			float cy = (1.0f - ((2.0f * static_cast<float>(py) + 0.5f) * reciprocalHeight)) * FOV;
 
 			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };

@@ -55,7 +55,7 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-		
+
 			return f0 + (1.0f - f0) * powf(1.0f - Vector3::Dot(h, v), 5);
 		}
 
@@ -94,9 +94,10 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			float Kdirect = (powf((roughness + 1), 2)) / 8;
+			float Kdirect = Square(Square(roughness) + 1) / 8;
+			const float dotNV = std::max(Vector3::Dot(n,v),0.f);
 
-			float G = Vector3::Dot(n, v) / ((Vector3::Dot(n, v) * (1 - Kdirect)) + Kdirect);
+			float G = dotNV / ((dotNV * (1 - Kdirect)) + Kdirect);
 
 			return G;
 		}
@@ -111,9 +112,8 @@ namespace dae
 		 */
 		static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+
+			return GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness);
 		}
 
 	}
