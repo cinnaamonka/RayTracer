@@ -25,6 +25,7 @@ namespace dae
 
 		void ToggleShadows() { m_ShadowsEnabled = !m_ShadowsEnabled; };
 		void CycleLightingMode();
+		void RenderChunk(Scene* pScene, int startY, int endY, float aspectRatioFOV, float reciprocalWidth, float reciprocalHeight) const;
 
 	private:
 		SDL_Window* m_pWindow{};
@@ -40,7 +41,7 @@ namespace dae
 			Combined
 
 		};
-		
+
 
 
 		LightingMode m_CurrentLightingMode = { LightingMode::ObservedArea };
