@@ -21,7 +21,8 @@ namespace dae
 			return { Lerpf(c1.r, c2.r, factor), Lerpf(c1.g, c2.g, factor), Lerpf(c1.b, c2.b, factor) };
 		}
 
-		ColorRGB& operator+=(const ColorRGB& c)
+		#pragma region ColorRGB (Member) Operators
+		const ColorRGB& operator+=(const ColorRGB& c)
 		{
 			r += c.r;
 			g += c.g;
@@ -29,7 +30,18 @@ namespace dae
 
 			return *this;
 		}
-		ColorRGB& operator-=(const ColorRGB& c)
+
+		const ColorRGB& operator+(const ColorRGB& c)
+		{
+			return *this += c;
+		}
+
+		ColorRGB operator+(const ColorRGB& c) const
+		{
+			return { r + c.r, g + c.g, b + c.b };
+		}
+
+		const ColorRGB& operator-=(const ColorRGB& c)
 		{
 			r -= c.r;
 			g -= c.g;
@@ -37,7 +49,18 @@ namespace dae
 
 			return *this;
 		}
-		ColorRGB& operator*=(const ColorRGB& c)
+
+		const ColorRGB& operator-(const ColorRGB& c)
+		{
+			return *this -= c;
+		}
+
+		ColorRGB operator-(const ColorRGB& c) const
+		{
+			return { r - c.r, g - c.g, b - c.b };
+		}
+
+		const ColorRGB& operator*=(const ColorRGB& c)
 		{
 			r *= c.r;
 			g *= c.g;
@@ -45,15 +68,18 @@ namespace dae
 
 			return *this;
 		}
-		ColorRGB& operator*=(float s)
-		{
-			r *= s;
-			g *= s;
-			b *= s;
 
-			return *this;
+		const ColorRGB& operator*(const ColorRGB& c)
+		{
+			return *this *= c;
 		}
-		ColorRGB& operator/=(const ColorRGB& c)
+
+		ColorRGB operator*(const ColorRGB& c) const
+		{
+			return { r * c.r, g * c.g, b * c.b };
+		}
+
+		const ColorRGB& operator/=(const ColorRGB& c)
 		{
 			r /= c.r;
 			g /= c.g;
@@ -61,7 +87,32 @@ namespace dae
 
 			return *this;
 		}
-		ColorRGB& operator/=(float s)
+
+		const ColorRGB& operator/(const ColorRGB& c)
+		{
+			return *this /= c;
+		}
+
+		const ColorRGB& operator*=(float s)
+		{
+			r *= s;
+			g *= s;
+			b *= s;
+
+			return *this;
+		}
+
+		const ColorRGB& operator*(float s)
+		{
+			return *this *= s;
+		}
+
+		ColorRGB operator*(float s) const
+		{
+			return { r * s, g * s,b * s };
+		}
+
+		const ColorRGB& operator/=(float s)
 		{
 			r /= s;
 			g /= s;
@@ -69,53 +120,19 @@ namespace dae
 
 			return *this;
 		}
+
+		const ColorRGB& operator/(float s)
+		{
+			return *this /= s;
+		}
+		#pragma endregion
 	};
 
-	inline ColorRGB operator*(float lhs, const ColorRGB& rhs)
+	//ColorRGB (Global) Operators
+	inline ColorRGB operator*(float s, const ColorRGB& c)
 	{
-		return { lhs * rhs.r, lhs * rhs.g, lhs * rhs.b };
+		return c * s;
 	}
-
-	inline ColorRGB operator*(const ColorRGB& lhs, float rhs)
-	{
-		return { lhs.r * rhs, lhs.g * rhs, lhs.b * rhs };
-	}
-
-	inline ColorRGB operator*(const ColorRGB& lhs, const ColorRGB& rhs)
-	{
-		return { lhs.r * rhs.r, lhs.g * rhs.g, lhs.b * rhs.b };
-	}
-
-	inline ColorRGB operator/(const ColorRGB& lhs, float rhs)
-	{
-		return { lhs.r / rhs, lhs.g / rhs, lhs.b / rhs };
-	}
-
-	inline ColorRGB operator/(float lhs, const ColorRGB& rhs)
-	{
-		return { lhs / rhs.r, lhs / rhs.g, lhs / rhs.b };
-	}
-
-	inline ColorRGB operator/(const ColorRGB& lhs, const ColorRGB& rhs)
-	{
-		return { lhs.r / rhs.r, lhs.g / rhs.g, lhs.b / rhs.b };
-	}
-
-	inline ColorRGB operator+(const ColorRGB& lhs, const ColorRGB& rhs)
-	{
-		return { lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b };
-	}
-
-	inline ColorRGB operator-(const ColorRGB& lhs, const ColorRGB& rhs)
-	{
-		return { lhs.r - rhs.r, lhs.g - rhs.g, lhs.b - rhs.b };
-	}
-
-	inline ColorRGB operator-(const float lhs, const ColorRGB& rhs)
-	{
-		return { lhs - rhs.r, lhs - rhs.g, lhs - rhs.b };
-	}
-
 
 	namespace colors
 	{

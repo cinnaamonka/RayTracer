@@ -125,7 +125,7 @@ namespace dae
 
 			ColorRGB specular = (F * D * G) / (4.0f * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
 
-			ColorRGB kdRGB =  1.0f - F;
+			ColorRGB kdRGB = ColorRGB{ 1.0f,1.0f,1.0f } - F;
 			ColorRGB kd = m_Metalness == 0.0f ? kdRGB : ColorRGB{0, 0, 0};
 
 			const ColorRGB diffuse{ BRDF::Lambert(kd,m_Albedo) };
