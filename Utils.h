@@ -62,7 +62,7 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W1
+
 			float dotPlaneRay = Vector3::Dot(plane.normal, ray.direction);
 
 			if (std::abs(dotPlaneRay) < 1e-6) {
@@ -70,7 +70,7 @@ namespace dae
 				return false;
 			}
 			float t = Vector3::Dot(plane.normal, (plane.origin - ray.origin)) / dotPlaneRay;
-		
+
 			if (t >= ray.min && t < ray.max && !ignoreHitRecord) {
 				hitRecord.didHit = true;
 				hitRecord.t = t;
@@ -95,9 +95,65 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			assert(false && "No Implemented Yet!");
-			return false;
+
+			float dot = Vector3::Dot(triangle.normal, ray.direction);
+
+			if (dot == 0)
+			{
+				return false;
+			}
+
+			if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+			{
+				if (dot < 0) return false;
+			}
+			if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+			{
+				if (dot > 0) return false;
+			}
+
+			Vector3 L = triangle.v0 - ray.origin;
+
+			float t = Vector3::Dot(L, triangle.normal) / Vector3::Dot(ray.direction, triangle.normal);
+
+			if (t < ray.min || t > ray.max)
+			{
+				return false;
+			}
+			//P
+			Vector3 intersectionPoint = ray.origin + ray.direction * t;
+
+			Vector3 e = {};
+			Vector3 p = {};
+
+			//V0
+			e = triangle.v1 - triangle.v0;
+			p = intersectionPoint - triangle.v0;
+
+			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
+			
+			//V1
+			e = triangle.v2 - triangle.v1;
+			p = intersectionPoint - triangle.v1;
+
+			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
+
+			//V2
+			e = triangle.v0 - triangle.v2;
+			p = intersectionPoint - triangle.v2;
+
+			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
+
+			if (!ignoreHitRecord)
+			{
+				hitRecord.t = t;
+				hitRecord.origin = ray.origin + ray.direction * t;
+				hitRecord.normal = triangle.normal;
+				hitRecord.didHit = true;
+				hitRecord.materialIndex = triangle.materialIndex;
+			}
+
+			return true;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
