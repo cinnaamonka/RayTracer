@@ -61,18 +61,18 @@ void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRati
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
 
-	for (int px = 0; px < m_Width; ++px) 
+	for (int px = 0; px < m_Width; ++px)
 	{
 		float cx = (((2.0f * (static_cast<float>(px) + 0.5f)) * reciprocalWidth) - 1.0f) * aspectRatioFOV;
 
-		for (int py = startY; py < endY; ++py) 
+		for (int py = startY; py < endY; ++py)
 		{
 			float cy = (1.0f - ((2.0f * static_cast<float>(py) + 0.5f) * reciprocalHeight)) * FOV;
 
 			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
 			viewRayDirection.Normalize();
 
-			Vector3 cameraSpaceDirection = { cx, cy, 1.0 };
+			Vector3 cameraSpaceDirection = { cx, cy ,1 } ;
 
 			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
 
@@ -84,8 +84,10 @@ void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRati
 
 			pScene->GetClosestHit(viewRay, closestHit);
 
-			if (closestHit.didHit) {
-				for (const Light& light : lights) {
+			if (closestHit.didHit)
+			{
+				for (const Light& light : lights)
+				{
 					Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
 					Vector3 directionHitToLight = light.origin - startingPoint;
 
@@ -93,7 +95,8 @@ void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRati
 
 					Vector3 l = (light.origin - closestHit.origin).Normalized();
 
-					Ray lightRay{
+					Ray lightRay
+					{
 						startingPoint,
 						directionHitToLight.Normalized(),
 						0.0001f,

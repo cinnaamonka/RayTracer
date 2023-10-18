@@ -34,7 +34,8 @@ namespace dae {
 
 	Vector3 Matrix::TransformVector(float x, float y, float z) const
 	{
-		return Vector3{
+		return Vector3
+		{
 			data[0].x * x + data[1].x * y + data[2].x * z,
 			data[0].y * x + data[1].y * y + data[2].y * z,
 			data[0].z * x + data[1].z * y + data[2].z * z
@@ -145,9 +146,9 @@ namespace dae {
 		Matrix rotationMatrix;
 
 		// Convert Euler angles to radians
-		float pitch = dae::TO_RADIANS * r.x;
-		float yaw = r.y * dae::TO_RADIANS;
-		float roll = r.z * dae::TO_RADIANS;
+		float pitch = r.x;
+		float yaw = r.y ;
+		float roll = r.z ;
 
 		// Calculate the rotation matrix
 		rotationMatrix[0][0] = cosf(yaw) * cosf(roll);
@@ -171,10 +172,7 @@ namespace dae {
 
 	Matrix Matrix::CreateScale(float sx, float sy, float sz)
 	{
-		
-
-		assert(false && "Not Implemented Yet");
-		return { Vector3(sx,0,0), Vector3{0,sy,0}, Vector3{0,0,sz},Vector3{0,0,1} };
+		return { Vector3(sx,0,0), Vector3{0,sy,0}, Vector3{0,0,sz},Vector3{0,0,0} };
 	}
 
 	Matrix Matrix::CreateScale(const Vector3& s)

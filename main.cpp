@@ -33,7 +33,7 @@ int main(int argc, char* args[])
 	const uint32_t height = 480;
 
 	SDL_Window* pWindow = SDL_CreateWindow(
-		"RayTracer - **Insert Name**",
+		"RayTracer - **Maryia Parniuk**",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -48,7 +48,7 @@ int main(int argc, char* args[])
 	/*const auto pScene = new Scene_W1();
 	pScene->Initialize();*/
 
-	const auto pScene = new Scene_W2();
+	const auto pScene = new Scene_W4();
 	pScene->Initialize();
 
 	//Start loop
@@ -81,6 +81,17 @@ int main(int argc, char* args[])
 				if (e.key.keysym.scancode == SDL_SCANCODE_F3)
 					pRenderer->CycleLightingMode();
 				break;
+			case SDL_MOUSEWHEEL:
+				if (e.wheel.y > 0)
+				{
+					pScene->GetCamera().HandleZoom(-5);
+				}
+				else
+				{
+					pScene->GetCamera().HandleZoom(5);
+				}
+			
+				break;
 			}
 		}
 
@@ -108,20 +119,6 @@ int main(int argc, char* args[])
 				std::cout << "Something went wrong. Screenshot not saved!" << std::endl;
 			takeScreenshot = false;
 		}
-
-		/*float dotResult{};
-		dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
-		std::cout << "1:" << dotResult << std::endl;
-		dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
-		std::cout << "2:" << dotResult << std::endl;
-		dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
-		std::cout << "3:" << dotResult << std::endl;
-
-		Vector3 crossResult{};
-		crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
-		std::cout << "cross 1:" << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;
-		crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
-		std::cout << "cross 2:" << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;*/
 	}
 	pTimer->Stop();
 

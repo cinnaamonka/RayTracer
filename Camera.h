@@ -47,33 +47,45 @@ namespace dae
 			};
 		}
 
+		void HandleZoom(int zoomValue)
+		{
+			const float minFOV = 0.0f;
+			const float maxFOV = 180.0f;
+
+			fovAngle += zoomValue;
+			fovAngle = std::max(minFOV, std::min(maxFOV, fovAngle));
+		}
+
 		void Update(Timer* pTimer)
 		{
 			const float deltaTime = pTimer->GetElapsed();
-			const float pixelsPerStep = 1.0f;
+			const float step = 1.0f;
+
+			Vector3 movementDirection{};
 
 			//Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 			if (pKeyboardState[SDL_SCANCODE_W])
 			{
-
-				origin.z += pixelsPerStep * deltaTime;
+				movementDirection.z = step;
 			}
 			if (pKeyboardState[SDL_SCANCODE_S])
 			{
-
-				origin.z -= pixelsPerStep * deltaTime;
+				movementDirection.z = -step;
 			}
 			if (pKeyboardState[SDL_SCANCODE_D])
 			{
 
-				origin.x += pixelsPerStep * deltaTime;
+				movementDirection.x = step;
 			}
 			if (pKeyboardState[SDL_SCANCODE_A])
 			{
-
-				origin.x -= pixelsPerStep * deltaTime;
+				movementDirection.x = -step;
 			}
+
+			const Matrix cameraToWorld = this->CalculateCameraToWorld();
+
+			origin += cameraToWorld.TransformVector(movementDirection) * deltaTime;
 
 			//Mouse Input
 			int mouseX{}, mouseY{};
@@ -81,19 +93,21 @@ namespace dae
 
 			float rotationSpeed{ 1.15f };
 
-			
+
 			if (mouseState == SDL_BUTTON_LEFT)
 			{
-				totalYaw += float(mouseY) * rotationSpeed;
+				totalYaw += TO_RADIANS * float(-mouseY) * rotationSpeed;
 
-				totalPitch += float(mouseX) * rotationSpeed;
+				totalPitch += TO_RADIANS * float(mouseX) * rotationSpeed;
 
 			}
 
+
 			Matrix rotMat
 			{
-			Matrix::CreateRotation(TO_RADIANS * totalYaw, TO_RADIANS * totalPitch, 0.f)
+			Matrix::CreateRotation(totalYaw,totalPitch, 0.f)
 			};
+
 
 			forward = rotMat.TransformVector(Vector3::UnitZ);
 		}
