@@ -93,6 +93,8 @@ namespace dae
 #pragma endregion
 #pragma region Triangle HitTest
 		//TRIANGLE HIT-TESTS
+
+
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 
@@ -103,13 +105,29 @@ namespace dae
 				return false;
 			}
 
-			if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
-			{
-				if (dot < 0) return false;
+
+
+			if (ignoreHitRecord) {
+				// For shadow rays
+				if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+				{
+					if (dot > 0) return false;
+				}
+				else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+				{
+					if (dot < 0) return false;
+				}
 			}
-			if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
-			{
-				if (dot > 0) return false;
+			else {
+				// For regular rays 
+				if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+				{
+					if (dot < 0) return false;
+				}
+				else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+				{
+					if (dot > 0) return false;
+				}
 			}
 
 			Vector3 L = triangle.v0 - ray.origin;
@@ -120,28 +138,21 @@ namespace dae
 			{
 				return false;
 			}
-			//P
+
 			Vector3 intersectionPoint = ray.origin + ray.direction * t;
 
-			Vector3 e = {};
-			Vector3 p = {};
+			Vector3 e, p;
 
-			//V0
 			e = triangle.v1 - triangle.v0;
 			p = intersectionPoint - triangle.v0;
-
 			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
-			
-			//V1
+
 			e = triangle.v2 - triangle.v1;
 			p = intersectionPoint - triangle.v1;
-
 			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
 
-			//V2
 			e = triangle.v0 - triangle.v2;
 			p = intersectionPoint - triangle.v2;
-
 			if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0) return false;
 
 			if (!ignoreHitRecord)

@@ -88,7 +88,7 @@ namespace dae {
 		{
 			HitRecord hit{};
 
-			if (GeometryUtils::HitTest_Triangle(triangle, ray, hit)) return true;
+			if (GeometryUtils::HitTest_Triangle(triangle, ray, hit,true)) return true;
 
 		}
 
@@ -279,7 +279,7 @@ namespace dae {
 		////Triangle (Temp)
 		////===============
 		auto triangle = Triangle{ {-.75f,.5f,.0f},{-.75f,2.f, .0f}, {.75f,.5f,0.f} };
-		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.cullMode = TriangleCullMode::BackFaceCulling;
 		triangle.materialIndex = matLambert_White;
 
 		m_Triangles.emplace_back(triangle);
