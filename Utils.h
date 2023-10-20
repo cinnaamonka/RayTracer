@@ -243,7 +243,7 @@ namespace dae
 	{
 		//Just parses vertices and indices
 #pragma warning(push)
-#pragma warning(disable : 4505) //Warning unreferenced local function
+ //Warning unreferenced local function
 		static bool ParseOBJ(const std::string& filename, std::vector<Vector3>& positions, std::vector<Vector3>& normals, std::vector<int>& indices)
 		{
 			std::ifstream file(filename);
