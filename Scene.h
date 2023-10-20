@@ -117,5 +117,24 @@ namespace dae
 		Scene_W4& operator=(Scene_W4&&) noexcept = delete;
 
 		void Initialize() override;
+		void Update(Timer* pTimer) override;
+	private:
+		TriangleMesh* pMesh = nullptr;
+	};
+	class Scene_W4_Reference final : public Scene
+	{
+	public:
+		Scene_W4_Reference() = default;
+		~Scene_W4_Reference() override = default;
+
+		Scene_W4_Reference(const Scene_W4_Reference&) = delete;
+		Scene_W4_Reference(Scene_W4_Reference&&) noexcept = delete;
+		Scene_W4_Reference& operator=(const Scene_W4_Reference&) = delete;
+		Scene_W4_Reference& operator=(Scene_W4_Reference&&) noexcept = delete;
+
+		void Initialize() override;
+		void Update(Timer* pTimer) override;
+	private:
+		TriangleMesh* m_Meshes[3]{};
 	};
 }
