@@ -51,7 +51,6 @@ namespace dae
 		std::vector<Light> m_Lights{};
 		std::vector<Material*> m_Materials{};
 
-		std::vector<Triangle> m_Triangles;
 
 		Camera m_Camera{};
 

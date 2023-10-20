@@ -96,7 +96,7 @@ namespace dae
 
 			if (mouseState == SDL_BUTTON_LEFT)
 			{
-				totalYaw += TO_RADIANS * float(-mouseY) * rotationSpeed;
+				totalYaw += TO_RADIANS * float(mouseY) * rotationSpeed;
 
 				totalPitch += TO_RADIANS * float(mouseX) * rotationSpeed;
 

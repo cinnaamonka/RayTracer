@@ -105,8 +105,6 @@ namespace dae
 				return false;
 			}
 
-
-
 			if (ignoreHitRecord) {
 				// For shadow rays
 				if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
@@ -176,11 +174,39 @@ namespace dae
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			assert(false && "No Implemented Yet!");
+			HitRecord hit{};
+
+			for (int i = 0; i < mesh.indices.size(); i += 3)
+			{
+				Triangle triangle = 
+				{
+					mesh.transformedPositions[mesh.indices[i]],
+					mesh.transformedPositions[mesh.indices[i + 1]],
+					mesh.transformedPositions[mesh.indices[i + 2]],
+					mesh.transformedNormals[i / 3]
+				};
+				
+				triangle.cullMode = mesh.cullMode;
+				triangle.materialIndex = mesh.materialIndex;
+
+				if (HitTest_Triangle(triangle, ray, hit))
+				{
+					if (ignoreHitRecord)
+						return true;
+
+					if (hit.t < hitRecord.t)
+						hitRecord = hit;
+
+				}
+			}
+			if (hitRecord.didHit)
+			{
+				hitRecord.materialIndex = mesh.materialIndex;
+				return true;
+			}
 			return false;
 		}
-
+	
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
 		{
 			HitRecord temp{};

@@ -28,7 +28,6 @@ namespace dae {
 
 	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
 	{
-		//todo W1
 
 		for (const Sphere& sphere : m_SphereGeometries)
 		{
@@ -53,16 +52,19 @@ namespace dae {
 
 			}
 		}
-		for (const Triangle& triangle : m_Triangles)
+		for (const TriangleMesh& mesh : m_TriangleMeshGeometries)
 		{
 			HitRecord hit{};
-			GeometryUtils::HitTest_Triangle(triangle, ray, hit);
+
+			GeometryUtils::HitTest_TriangleMesh(mesh, ray, hit);
 			//choosing the closest intersection point to camera
 			if (hit.t < closestHit.t)
 			{
+				
 				closestHit = hit;
 
 			}
+			
 		}
 	}
 
@@ -84,13 +86,13 @@ namespace dae {
 
 		}
 
-		for (const Triangle& triangle : m_Triangles)
+		for (const TriangleMesh& mesh : m_TriangleMeshGeometries)
 		{
 			HitRecord hit{};
 
-			if (GeometryUtils::HitTest_Triangle(triangle, ray, hit,true)) return true;
-
+			if (GeometryUtils::HitTest_TriangleMesh(mesh, ray, hit,true)) return true;
 		}
+		
 
 		return false;
 	}
@@ -260,10 +262,10 @@ namespace dae {
 #pragma region SCENE W4
 	void Scene_W4::Initialize()
 	{
-		m_Camera.origin = { 0.f,1.f,4.f };
+		m_Camera.origin = { 0.f,1.f,-5.f };
 		m_Camera.fovAngle = 45.f;
-		//m_Camera.totalYaw = 0;
-		m_Camera.totalYaw = M_PI;
+		m_Camera.totalYaw = 0;
+		//m_Camera.totalYaw = M_PI;
 
 		//Materials
 		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, 0.57f, 0.57f }, 1.f));
@@ -276,32 +278,35 @@ namespace dae {
 		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
 		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
-		////Triangle (Temp)
-		////===============
-		auto triangle = Triangle{ {-.75f,.5f,.0f},{-.75f,2.f, .0f}, {.75f,.5f,0.f} };
-		triangle.cullMode = TriangleCullMode::BackFaceCulling;
-		triangle.materialIndex = matLambert_White;
+		//////Triangle (Temp)
+		//////===============
+		//auto triangle = Triangle{ {-.75f,.5f,.0f},{-.75f,2.f, .0f}, {.75f,.5f,0.f} };
+		//triangle.cullMode = TriangleCullMode::BackFaceCulling;
+		//triangle.materialIndex = matLambert_White;
 
-		m_Triangles.emplace_back(triangle);
+		//m_Triangles.emplace_back(triangle);
 
-		//Triangle Mesh
-		//=============
-		//pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		//pMesh->positions = {
-		//	{-.75f,-1.f,.0f},  //V0
-		//	{-.75f,1.f, .0f},  //V2
-		//	{.75f,1.f,1.f},    //V3
-		//	{.75f,-1.f,0.f} }; //V4
+		/*Triangle Mesh
+		=============*/
+		const auto triangleMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
 
-		//pMesh->indices = {
-		//	0,1,2, //Triangle 1
-		//	0,2,3  //Triangle 2
-		//};
+		triangleMesh->positions = {
+			{-.75f,-1.f,.0f},  //V0
+			{-.75f,1.f, .0f},  //V2
+			{.75f,1.f,1.f},    //V3
+			{.75f,-1.f,0.f} }; //V4
 
-		//pMesh->CalculateNormals();
+		triangleMesh->indices = {
+			0,1,2, //Triangle 1
+			0,2,3  //Triangle 2
+		};
 
-		//pMesh->Translate({ 0.f,1.5f,0.f });
-		//pMesh->UpdateTransforms();
+		triangleMesh->CalculateNormals();
+
+		//triangleMesh->Translate({ 0.f,1.5f,0.f });
+		//triangleMesh->RotateY(45);
+
+		triangleMesh->UpdateTransforms();
 
 		////OBJ
 		////===
