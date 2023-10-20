@@ -12,7 +12,7 @@
 using namespace dae;
 
 const int ALL_NUM_THREADS = std::thread::hardware_concurrency();
-const int NUM_THREADS = ALL_NUM_THREADS - ALL_NUM_THREADS / 2;
+const int NUM_THREADS = ALL_NUM_THREADS;
 
 Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow(pWindow),
