@@ -7,12 +7,8 @@
 #include "Scene.h"
 #include "Utils.h"
 #include <vector>
-#include <thread>
 
 using namespace dae;
-
-const int ALL_NUM_THREADS = std::thread::hardware_concurrency();
-const int NUM_THREADS = ALL_NUM_THREADS - ALL_NUM_THREADS / 2;
 
 Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow(pWindow),
@@ -24,55 +20,26 @@ Renderer::Renderer(SDL_Window* pWindow) :
 
 void Renderer::Render(Scene* pScene) const
 {
-	float aspectRatioFOV = (m_Width / static_cast<float>(m_Height)) * tan(dae::TO_RADIANS * pScene->GetCamera().fovAngle / 2);
-	float reciprocalWidth = 1.0f / static_cast<float>(m_Width);
-	float reciprocalHeight = 1.0f / static_cast<float>(m_Height);
-
-	std::vector<std::thread> threads;
-	int chunkHeight = m_Height / NUM_THREADS;
-
-	auto renderChunkFunc = [&](int startY, int endY) {
-		RenderChunk(pScene, startY, endY, aspectRatioFOV, reciprocalWidth, reciprocalHeight);
-	};
-
-	for (int i = 0; i < NUM_THREADS; ++i) {
-		int startY = i * chunkHeight;
-		int endY = (i == NUM_THREADS - 1) ? m_Height : (startY + chunkHeight);
-
-		threads.emplace_back(renderChunkFunc, startY, endY);
-	}
-
-	for (std::thread& thread : threads) {
-		thread.join();
-	}
-
-	SDL_UpdateWindowSurface(m_pWindow);
-}
-
-void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRatioFOV, float reciprocalWidth, float reciprocalHeight) const
-{
 	Camera& camera = pScene->GetCamera();
-
-	float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
-
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
+	float aspectRatio = m_Width / static_cast<float>(m_Height);
 
+	float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
-
-	for (int px = 0; px < m_Width; ++px)
+	for (int px{}; px < m_Width; ++px)
 	{
-		float cx = (((2.0f * (static_cast<float>(px) + 0.5f)) * reciprocalWidth) - 1.0f) * aspectRatioFOV;
+		float cx = (((2.f * (static_cast<float>(px) + 0.5f)) / static_cast<float>(m_Width)) - 1.f) * aspectRatio * FOV;
 
-		for (int py = startY; py < endY; ++py)
+		for (int py{}; py < m_Height; ++py)
 		{
-			float cy = (1.0f - ((2.0f * static_cast<float>(py) + 0.5f) * reciprocalHeight)) * FOV;
+			float cy = (1.f - ((2.f * static_cast<float>(py) + 0.5f)) / static_cast<float>(m_Height)) * FOV;
 
 			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
 			viewRayDirection.Normalize();
 
-			Vector3 cameraSpaceDirection = { cx, cy ,1 } ;
+			Vector3 cameraSpaceDirection = { cx, cy ,1 };
 
 			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
 
@@ -147,6 +114,21 @@ void Renderer::RenderChunk(Scene* pScene, int startY, int endY, float aspectRati
 
 	SDL_UpdateWindowSurface(m_pWindow);
 }
+//void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const
+//{
+//	std::vector<dae::Material*> materials = pScene->GetMaterials();
+//
+//	const uint32_t px = pixelIndex % m_Width;
+//	const uint32_t py = pixelIndex / m_Width;
+//
+//	float rx = px + 0.5f;
+//	float ry = py + 0.5f;
+//	float cx = 2 * (rx / float(m_Width) - 1) * aspectRatio * fov;
+//	float cy = (1 - (2 * (ry / float(m_Height)))) * fov;
+//
+//
+//
+//}
 
 bool Renderer::SaveBufferToImage() const
 {

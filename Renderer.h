@@ -21,11 +21,11 @@ namespace dae
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
 		void Render(Scene* pScene) const;
+		//void RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const;
 		bool SaveBufferToImage() const;
 
 		void ToggleShadows() { m_ShadowsEnabled = !m_ShadowsEnabled; };
 		void CycleLightingMode();
-		void RenderChunk(Scene* pScene, int startY, int endY, float aspectRatioFOV, float reciprocalWidth, float reciprocalHeight) const;
 
 	private:
 		SDL_Window* m_pWindow{};
@@ -41,8 +41,6 @@ namespace dae
 			Combined
 
 		};
-
-
 
 		LightingMode m_CurrentLightingMode = { LightingMode::ObservedArea };
 
