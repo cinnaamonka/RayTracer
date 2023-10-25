@@ -415,9 +415,6 @@ namespace dae {
 
 		m_pBunnyMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
 		m_pBunnyMesh->UpdateTransforms();
-
-
-
 	}
 #pragma endregion
 }
