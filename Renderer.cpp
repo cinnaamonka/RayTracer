@@ -8,6 +8,7 @@
 #include "Utils.h"
 #include <vector>
 
+//#define PARALLEL_EXECUTION
 using namespace dae;
 
 Renderer::Renderer(SDL_Window* pWindow) :
@@ -21,114 +22,112 @@ Renderer::Renderer(SDL_Window* pWindow) :
 void Renderer::Render(Scene* pScene) const
 {
 	Camera& camera = pScene->GetCamera();
-	auto& materials = pScene->GetMaterials();
-	auto& lights = pScene->GetLights();
 	float aspectRatio = m_Width / static_cast<float>(m_Height);
 
 	float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
-	for (int px{}; px < m_Width; ++px)
+	uint32_t amountOfPixels = uint32_t(m_Width * m_Height);
+#if defined(PARALLEL_EXECUTION)
+	//define some code
+#else
+	for (uint32_t pixelIndex = 0; pixelIndex < amountOfPixels; pixelIndex++)
 	{
-		float cx = (((2.f * (static_cast<float>(px) + 0.5f)) / static_cast<float>(m_Width)) - 1.f) * aspectRatio * FOV;
+		RenderPixel(pScene, pixelIndex, FOV, aspectRatio, cameraToWorld, camera.origin);
+	}
+#endif
+	SDL_UpdateWindowSurface(m_pWindow);
 
-		for (int py{}; py < m_Height; ++py)
+}
+
+void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const
+{
+	const std::vector<dae::Material*> materials = pScene->GetMaterials();
+	const std::vector<dae::Light> lights = pScene->GetLights();
+
+	const uint32_t px = pixelIndex % m_Width;
+	const uint32_t py = pixelIndex / m_Width;
+
+	float rx = px + 0.5f;
+	float ry = py + 0.5f;
+	float cx = (2.f * rx / static_cast<float>(m_Width) - 1.f) * aspectRatio * fov;
+	float cy = (1.f - (2.f * ry) / static_cast<float>(m_Height)) * fov;
+
+	Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
+	viewRayDirection.Normalize();
+
+	Vector3 cameraSpaceDirection = { cx, cy ,1 };
+
+	Ray viewRay = Ray(cameraToOrigin, cameraToWWorld.TransformVector(cameraSpaceDirection));
+
+	Vector3 v = viewRay.direction.Normalized() * (-1.0f);
+
+	HitRecord closestHit{};
+
+	ColorRGB finalColor{};
+
+	pScene->GetClosestHit(viewRay, closestHit);
+
+	if (closestHit.didHit)
+	{
+		for (const Light& light : lights)
 		{
-			float cy = (1.f - ((2.f * static_cast<float>(py) + 0.5f)) / static_cast<float>(m_Height)) * FOV;
+			Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
+			Vector3 directionHitToLight = light.origin - startingPoint;
 
-			Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
-			viewRayDirection.Normalize();
+			const float distance = directionHitToLight.Magnitude();
 
-			Vector3 cameraSpaceDirection = { cx, cy ,1 };
+			Vector3 l = (light.origin - closestHit.origin).Normalized();
 
-			Ray viewRay = Ray(camera.origin, cameraToWorld.TransformVector(cameraSpaceDirection));
-
-			Vector3 v = viewRay.direction.Normalized() * (-1.0f);
-
-			HitRecord closestHit{};
-
-			ColorRGB finalColor{};
-
-			pScene->GetClosestHit(viewRay, closestHit);
-
-			if (closestHit.didHit)
+			Ray lightRay
 			{
-				for (const Light& light : lights)
-				{
-					Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
-					Vector3 directionHitToLight = light.origin - startingPoint;
+				startingPoint,
+				directionHitToLight.Normalized(),
+				0.0001f,
+				distance
+			};
 
-					const float distance = directionHitToLight.Magnitude();
+			lightRay.max = distance;
 
-					Vector3 l = (light.origin - closestHit.origin).Normalized();
+			float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
 
-					Ray lightRay
-					{
-						startingPoint,
-						directionHitToLight.Normalized(),
-						0.0001f,
-						distance
-					};
+			if (m_ShadowsEnabled && pScene->DoesHit(lightRay)) continue;
 
-					lightRay.max = distance;
+			switch (m_CurrentLightingMode) {
+			case LightingMode::ObservedArea:
+				if (cosAngle < 0) continue;
 
-					float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
+				finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
 
-					if (m_ShadowsEnabled && pScene->DoesHit(lightRay)) continue;
+				break;
+			case LightingMode::Radiance:
+				finalColor += LightUtils::GetRadiance(light, closestHit.origin);
 
-					switch (m_CurrentLightingMode) {
-					case LightingMode::ObservedArea:
-						if (cosAngle < 0) continue;
+				break;
+			case LightingMode::BRDF:
+				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
 
-						finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
+				break;
+			case LightingMode::Combined:
+				if (cosAngle < 0) continue;
 
-						break;
-					case LightingMode::Radiance:
-						finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+				finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *
+					materials[closestHit.materialIndex]->Shade(closestHit, l, v) *
+					cosAngle);
 
-						break;
-					case LightingMode::BRDF:
-						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
-
-						break;
-					case LightingMode::Combined:
-						if (cosAngle < 0) continue;
-
-						finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *
-							materials[closestHit.materialIndex]->Shade(closestHit, l, v) *
-							cosAngle);
-
-						break;
-					}
-				}
+				break;
 			}
-
-			finalColor.MaxToOne();
-
-			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
-				static_cast<uint8_t>(finalColor.r * 255),
-				static_cast<uint8_t>(finalColor.g * 255),
-				static_cast<uint8_t>(finalColor.b * 255));
 		}
 	}
 
-	SDL_UpdateWindowSurface(m_pWindow);
+	finalColor.MaxToOne();
+
+	m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
+		static_cast<uint8_t>(finalColor.r * 255),
+		static_cast<uint8_t>(finalColor.g * 255),
+		static_cast<uint8_t>(finalColor.b * 255));
 }
-//void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const
-//{
-//	std::vector<dae::Material*> materials = pScene->GetMaterials();
-//
-//	const uint32_t px = pixelIndex % m_Width;
-//	const uint32_t py = pixelIndex / m_Width;
-//
-//	float rx = px + 0.5f;
-//	float ry = py + 0.5f;
-//	float cx = 2 * (rx / float(m_Width) - 1) * aspectRatio * fov;
-//	float cy = (1 - (2 * (ry / float(m_Height)))) * fov;
-//
-//
-//
-//}
+
 
 bool Renderer::SaveBufferToImage() const
 {

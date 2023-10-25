@@ -5,9 +5,13 @@
 struct SDL_Window;
 struct SDL_Surface;
 
+
 namespace dae
 {
 	class Scene;
+
+	struct Matrix;
+	struct Vector3;
 
 	class Renderer final
 	{
@@ -21,7 +25,7 @@ namespace dae
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
 		void Render(Scene* pScene) const;
-		//void RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const;
+		void RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix cameraToWWorld, const Vector3 cameraToOrigin) const;
 		bool SaveBufferToImage() const;
 
 		void ToggleShadows() { m_ShadowsEnabled = !m_ShadowsEnabled; };
