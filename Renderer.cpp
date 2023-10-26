@@ -7,8 +7,9 @@
 #include "Scene.h"
 #include "Utils.h"
 #include <vector>
+#include <execution>
 
-//#define PARALLEL_EXECUTION
+#define PARALLEL_EXECUTION
 using namespace dae;
 
 Renderer::Renderer(SDL_Window* pWindow) :
@@ -29,7 +30,16 @@ void Renderer::Render(Scene* pScene) const
 
 	uint32_t amountOfPixels = uint32_t(m_Width * m_Height);
 #if defined(PARALLEL_EXECUTION)
-	//define some code
+	std::vector<uint32_t> pixelIndices{};
+
+	pixelIndices.reserve(amountOfPixels);
+	for (uint32_t index = 0; index < amountOfPixels; ++index) pixelIndices.emplace_back(index);
+
+	std::for_each(std::execution::par, pixelIndices.begin(), pixelIndices.end(), [&](int i)
+		{
+			RenderPixel(pScene, i, FOV, aspectRatio, cameraToWorld, camera.origin);
+		});
+
 #else
 	for (uint32_t pixelIndex = 0; pixelIndex < amountOfPixels; pixelIndex++)
 	{
