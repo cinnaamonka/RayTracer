@@ -202,9 +202,8 @@ namespace dae
 		void UpdateTransforms()
 		{
 			//Calculate Final Transform 
-			Matrix transformRotationTransform = translationTransform * rotationTransform;
 
-			Matrix transformationMatrix = transformRotationTransform * scaleTransform;
+			const Matrix finalTransform = scaleTransform * rotationTransform * translationTransform;
 
 			transformedPositions.clear();
 			transformedNormals.clear();
@@ -214,13 +213,13 @@ namespace dae
 			//Transform Positions (positions > transformedPositions)
 			for (const Vector3& pos : positions)
 			{
-				transformedPositions.emplace_back(transformationMatrix.TransformPoint(pos));
+				transformedPositions.emplace_back(finalTransform.TransformPoint(pos));
 			}
-			UpdateTransformedAABB(transformationMatrix);
+			UpdateTransformedAABB(finalTransform);
 			//Transform Normals (normals > transformedNormals)
 			for (const Vector3& normal : normals)
 			{
-				transformedNormals.emplace_back(transformRotationTransform.TransformVector(normal));
+				transformedNormals.emplace_back(finalTransform.TransformVector(normal));
 			}
 		}
 	};

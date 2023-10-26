@@ -130,7 +130,8 @@ namespace dae {
 			Vector3{cos(yaw),0,-sin(yaw)},
 			Vector3{0,1,0},
 			Vector3{sin(yaw),0,cos(yaw)},
-			Vector3{0,0,0} };
+			Vector3{0,0,0} 
+		};
 	}
 
 	Matrix Matrix::CreateRotationZ(float roll)

@@ -191,16 +191,14 @@ namespace dae
 
 			tmin = std::max(tmin, std::min(tz1, tz2));
 			tmax = std::min(tmax, std::max(tz1, tz2));
-
 			return tmax > 0 && tmax >= tmin;
 		}
 
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-
 			if (!SlabTest_TriangleMesh(mesh, ray))
 			{
-				return false;
+				return false;  
 			}
 			
 			HitRecord hit{};
