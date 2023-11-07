@@ -11,19 +11,19 @@ namespace dae
 	{
 #pragma region Sphere HitTest
 		//SPHERE HIT-TESTS
-		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false) 
 		{
 			// Calculate the vector from the ray's origin to the sphere's center
-			Vector3 oc = ray.origin - sphere.origin;
+			const Vector3 oc = ray.origin - sphere.origin;
 
-			float a = Vector3::Dot(ray.direction, ray.direction);
-			float b = Vector3::Dot(oc, ray.direction);
-			float c = Vector3::Dot(oc, oc) - sphere.radius * sphere.radius;
-			float discriminant = b * b - a * c;
+			const float a = Vector3::Dot(ray.direction, ray.direction);
+			const float b = Vector3::Dot(oc, ray.direction);
+			const float c = Vector3::Dot(oc, oc) - sphere.radius * sphere.radius;
+			const float discriminant = b * b - a * c;
 
 			if (discriminant > 0)
 			{
-				float sqrtD = sqrtf(discriminant);
+				const float sqrtD = sqrtf(discriminant);
 
 				// Find the nearest root that is in the acceptable range
 				float t = (-b - sqrtD) / a;
@@ -51,7 +51,7 @@ namespace dae
 		}
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
 		{
-			HitRecord temp{};
+			HitRecord temp = {};
 
 			return HitTest_Sphere(sphere, ray, temp, true);
 		}
@@ -62,14 +62,13 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-
-			float dotPlaneRay = Vector3::Dot(plane.normal, ray.direction);
+			const float dotPlaneRay = Vector3::Dot(plane.normal, ray.direction);
 
 			if (std::abs(dotPlaneRay) < 1e-6) {
 				// Ray is parallel to the plane
 				return false;
 			}
-			float t = Vector3::Dot(plane.normal, (plane.origin - ray.origin)) / dotPlaneRay;
+			const float t = Vector3::Dot(plane.normal, (plane.origin - ray.origin)) / dotPlaneRay;
 
 			if (t >= ray.min && t < ray.max && !ignoreHitRecord) {
 				hitRecord.didHit = true;
@@ -87,18 +86,16 @@ namespace dae
 
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray)
 		{
-			HitRecord temp{};
+			HitRecord temp {};
 			return HitTest_Plane(plane, ray, temp, true);
 		}
 #pragma endregion
 #pragma region Triangle HitTest
 		//TRIANGLE HIT-TESTS
 
-
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-
-			float dot = Vector3::Dot(triangle.normal, ray.direction);
+			const float dot = Vector3::Dot(triangle.normal, ray.direction);
 
 			if (dot == 0)
 			{
@@ -128,16 +125,16 @@ namespace dae
 				}
 			}
 
-			Vector3 L = triangle.v0 - ray.origin;
+			const Vector3 L = triangle.v0 - ray.origin;
 
-			float t = Vector3::Dot(L, triangle.normal) / Vector3::Dot(ray.direction, triangle.normal);
+			const float t = Vector3::Dot(L, triangle.normal) / Vector3::Dot(ray.direction, triangle.normal);
 
 			if (t < ray.min || t > ray.max)
 			{
 				return false;
 			}
 
-			Vector3 intersectionPoint = ray.origin + ray.direction * t;
+			const Vector3 intersectionPoint = ray.origin + ray.direction * t;
 
 			Vector3 e, p;
 
@@ -167,27 +164,27 @@ namespace dae
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
 		{
-			HitRecord temp{};
+			HitRecord temp = {};
 			return HitTest_Triangle(triangle, ray, temp, true);
 		}
 #pragma endregion
 #pragma region TriangeMesh HitTest
 		inline bool SlabTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
 		{
-			float tx1 = (mesh.transformedMinAABB.x - ray.origin.x) / ray.direction.x;
-			float tx2 = (mesh.transformedMaxAABB.x - ray.origin.x) / ray.direction.x;
+			const float tx1 = (mesh.transformedMinAABB.x - ray.origin.x) / ray.direction.x;
+			const float tx2 = (mesh.transformedMaxAABB.x - ray.origin.x) / ray.direction.x;
 
 			float tmin = std::min(tx1, tx2);
 			float tmax = std::max(tx1, tx2);
 
-			float ty1 = (mesh.transformedMinAABB.y - ray.origin.y) / ray.direction.y;
-			float ty2 = (mesh.transformedMaxAABB.y - ray.origin.y) / ray.direction.y;
+			const float ty1 = (mesh.transformedMinAABB.y - ray.origin.y) / ray.direction.y;
+			const float ty2 = (mesh.transformedMaxAABB.y - ray.origin.y) / ray.direction.y;
 
 			tmin = std::max(tmin, std::min(ty1, ty2));
 			tmax = std::min(tmax, std::max(ty1, ty2));
 
-			float tz1 = (mesh.transformedMinAABB.z - ray.origin.z) / ray.direction.z;
-			float tz2 = (mesh.transformedMaxAABB.z - ray.origin.z) / ray.direction.z;
+			const float tz1 = (mesh.transformedMinAABB.z - ray.origin.z) / ray.direction.z;
+			const float tz2 = (mesh.transformedMaxAABB.z - ray.origin.z) / ray.direction.z;
 
 			tmin = std::max(tmin, std::min(tz1, tz2));
 			tmax = std::min(tmax, std::max(tz1, tz2));
@@ -201,7 +198,7 @@ namespace dae
 				return false;  
 			}
 			
-			HitRecord hit{};
+			HitRecord hit = {};
 
 			for (int i = 0; i < mesh.indices.size(); i += 3)
 			{
@@ -236,7 +233,7 @@ namespace dae
 
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
 		{
-			HitRecord temp{};
+			HitRecord temp = {};
 			return HitTest_TriangleMesh(mesh, ray, temp, true);
 		}
 
@@ -249,7 +246,7 @@ namespace dae
 		//Direction from target to light
 		inline Vector3 GetDirectionToLight(const Light& light, const Vector3 origin)
 		{
-			Vector3 direction = { light.origin - origin };
+			const Vector3 direction = { light.origin - origin };
 
 
 			return  direction;

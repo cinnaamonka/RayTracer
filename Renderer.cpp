@@ -14,7 +14,9 @@ using namespace dae;
 
 Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow(pWindow),
-	m_pBuffer(SDL_GetWindowSurface(pWindow))
+	m_pBuffer(SDL_GetWindowSurface(pWindow)),
+	m_ShadowsEnabled(false),
+	m_Width(0), m_Height(0)
 {
 	SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
 	m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
@@ -23,16 +25,21 @@ Renderer::Renderer(SDL_Window* pWindow) :
 void Renderer::Render(Scene* pScene) const
 {
 	Camera& camera = pScene->GetCamera();
-	float aspectRatio = m_Width / static_cast<float>(m_Height);
 
-	float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
+	const float aspectRatio = m_Width / static_cast<float>(m_Height);
+
+	const float FOV = tan((dae::TO_RADIANS * camera.fovAngle) / 2);
+
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
-	uint32_t amountOfPixels = uint32_t(m_Width * m_Height);
+	const uint32_t amountOfPixels = uint32_t(m_Width * m_Height);
+
 #if defined(PARALLEL_EXECUTION)
+
 	std::vector<uint32_t> pixelIndices{};
 
 	pixelIndices.reserve(amountOfPixels);
+
 	for (uint32_t index = 0; index < amountOfPixels; ++index) pixelIndices.emplace_back(index);
 
 	std::for_each(std::execution::par, pixelIndices.begin(), pixelIndices.end(), [&](int i)
@@ -58,23 +65,23 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 	const uint32_t px = pixelIndex % m_Width;
 	const uint32_t py = pixelIndex / m_Width;
 
-	float rx = px + 0.5f;
-	float ry = py + 0.5f;
-	float cx = (2.f * rx / static_cast<float>(m_Width) - 1.f) * aspectRatio * fov;
-	float cy = (1.f - (2.f * ry) / static_cast<float>(m_Height)) * fov;
+	const float rx = px + 0.5f;
+	const float ry = py + 0.5f;
+	const float cx = (2.f * rx / static_cast<float>(m_Width) - 1.f) * aspectRatio * fov;
+	const float cy = (1.f - (2.f * ry) / static_cast<float>(m_Height)) * fov;
 
 	Vector3 viewRayDirection = { cx * Vector3::UnitX + cy * Vector3::UnitY + Vector3::UnitZ };
 	viewRayDirection.Normalize();
 
-	Vector3 cameraSpaceDirection = { cx, cy ,1 };
+	const Vector3 cameraSpaceDirection = { cx, cy ,1 };
 
-	Ray viewRay = Ray(cameraToOrigin, cameraToWWorld.TransformVector(cameraSpaceDirection));
+	const Ray viewRay = Ray(cameraToOrigin, cameraToWWorld.TransformVector(cameraSpaceDirection));
 
-	Vector3 v = viewRay.direction.Normalized() * (-1.0f);
+	const Vector3 v = viewRay.direction.Normalized() * (-1.0f);
 
-	HitRecord closestHit{};
+	HitRecord closestHit = {};
 
-	ColorRGB finalColor{};
+	ColorRGB finalColor = {};
 
 	pScene->GetClosestHit(viewRay, closestHit);
 
@@ -82,12 +89,12 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 	{
 		for (const Light& light : lights)
 		{
-			Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
-			Vector3 directionHitToLight = light.origin - startingPoint;
+			const Vector3 startingPoint = closestHit.origin + closestHit.normal * 0.001f;
+			const Vector3 directionHitToLight = light.origin - startingPoint;
 
 			const float distance = directionHitToLight.Magnitude();
 
-			Vector3 l = (light.origin - closestHit.origin).Normalized();
+			const Vector3 l = (light.origin - closestHit.origin).Normalized();
 
 			Ray lightRay
 			{
@@ -99,26 +106,31 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 
 			lightRay.max = distance;
 
-			float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
+			const float cosAngle = Vector3::Dot(closestHit.normal, lightRay.direction);
 
 			if (m_ShadowsEnabled && pScene->DoesHit(lightRay)) continue;
 
-			switch (m_CurrentLightingMode) {
+			switch (m_CurrentLightingMode)
+			{
 			case LightingMode::ObservedArea:
+
 				if (cosAngle < 0) continue;
 
 				finalColor += ColorRGB{ cosAngle, cosAngle, cosAngle };
 
 				break;
 			case LightingMode::Radiance:
+
 				finalColor += LightUtils::GetRadiance(light, closestHit.origin);
 
 				break;
 			case LightingMode::BRDF:
+
 				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, l, v);
 
 				break;
 			case LightingMode::Combined:
+
 				if (cosAngle < 0) continue;
 
 				finalColor += (LightUtils::GetRadiance(light, closestHit.origin) *

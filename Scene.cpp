@@ -5,7 +5,7 @@
 namespace dae {
 
 #pragma region Base Scene
-	//Initialize Scene with Default Solid Color Material (RED)
+	
 	Scene::Scene() :
 		m_Materials({ new Material_SolidColor({1,0,0}) })
 	{
@@ -72,7 +72,7 @@ namespace dae {
 	{
 		for (const Sphere& sphere : m_SphereGeometries)
 		{
-			HitRecord hit{};
+			HitRecord hit = {};
 
 			if (GeometryUtils::HitTest_Sphere(sphere, ray, hit)) return true;
 
@@ -80,7 +80,7 @@ namespace dae {
 
 		for (const Plane& plane : m_PlaneGeometries)
 		{
-			HitRecord hit{};
+			HitRecord hit = {};
 
 			if (GeometryUtils::HitTest_Plane(plane, ray, hit)) return true;
 
@@ -88,7 +88,7 @@ namespace dae {
 
 		for (const TriangleMesh& mesh : m_TriangleMeshGeometries)
 		{
-			HitRecord hit{};
+			HitRecord hit = {};
 
 			if (GeometryUtils::HitTest_TriangleMesh(mesh, ray, hit, true)) return true;
 		}
@@ -122,7 +122,7 @@ namespace dae {
 
 	TriangleMesh* Scene::AddTriangleMesh(TriangleCullMode cullMode, unsigned char materialIndex)
 	{
-		TriangleMesh m{};
+		TriangleMesh m = {};
 		m.cullMode = cullMode;
 		m.materialIndex = materialIndex;
 
@@ -227,8 +227,6 @@ namespace dae {
 			mesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
 			mesh->UpdateTransforms();
 		}
-
-
 	}
 #pragma endregion
 #pragma region SCENE Raytracer_BUNNY

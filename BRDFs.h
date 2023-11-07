@@ -38,10 +38,10 @@ namespace dae
 		 */
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
-			Vector3 reflect = Vector3::Reflect(l, n);
+			const Vector3 reflect = Vector3::Reflect(l, n);
 			const float cosAlpha{ std::max(Vector3::Dot(reflect,v),0.0f) };
 
-			ColorRGB color = (ks * powf(cosAlpha, exp)) * colors::White;
+			const ColorRGB color = (ks * powf(cosAlpha, exp)) * colors::White;
 			return (ks * powf(cosAlpha, exp)) * colors::White;
 
 		}
@@ -94,10 +94,10 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			float Kdirect = Square(Square(roughness) + 1) / 8;
+			const float Kdirect = Square(Square(roughness) + 1) / 8;
 			const float dotNV = std::max(Vector3::Dot(n,v),0.f);
 
-			float G = dotNV / ((dotNV * (1 - Kdirect)) + Kdirect);
+			const float G = dotNV / ((dotNV * (1 - Kdirect)) + Kdirect);
 
 			return G;
 		}

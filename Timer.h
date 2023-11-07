@@ -51,11 +51,11 @@ namespace dae
 		bool m_ForceElapsedUpperBound = false;
 
 		bool m_BenchmarkActive = false;
-		float m_BenchmarkHigh{ 0.f };
-		float m_BenchmarkLow{ 0.f };
-		float m_BenchmarkAvg{ 0.f };
-		int m_BenchmarkFrames{ 0 };
-		int m_BenchmarkCurrFrame{ 0 };
-		std::vector<float> m_Benchmarks{};
+		float m_BenchmarkHigh = 0.f;
+		float m_BenchmarkLow = 0.f;
+		float m_BenchmarkAvg = 0.f;
+		int m_BenchmarkFrames = 0;
+		int m_BenchmarkCurrFrame = 0;
+		std::vector<float> m_Benchmarks {};
 	};
 }

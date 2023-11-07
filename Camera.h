@@ -20,17 +20,17 @@ namespace dae
 		}
 
 
-		Vector3 origin{};
-		float fovAngle{ 90.f };
+		Vector3 origin = { 0,0,0 };
+		float fovAngle = 90.f;
 
-		Vector3 forward{ Vector3::UnitZ };
-		Vector3 up{ Vector3::UnitY };
-		Vector3 right{ Vector3::UnitX };
+		Vector3 forward = Vector3::UnitZ;
+		Vector3 up = Vector3::UnitY;
+		Vector3 right = Vector3::UnitX;
 
-		float totalPitch{ 0.f };
-		float totalYaw{ 0.f };
+		float totalPitch = 0.f;
+		float totalYaw = 0.f;
 
-		Matrix cameraToWorld{};
+		Matrix cameraToWorld = {};
 
 
 		Matrix CalculateCameraToWorld()
@@ -61,10 +61,11 @@ namespace dae
 			const float deltaTime = pTimer->GetElapsed();
 			const float step = 1.0f;
 
-			Vector3 movementDirection{};
+			const Vector3 movementDirection{};
 
 			//Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
+
 			if (pKeyboardState[SDL_SCANCODE_W])
 			{
 				origin += (step * deltaTime) * forward.Normalized();
@@ -83,19 +84,21 @@ namespace dae
 				origin -= (step * deltaTime) * right.Normalized();
 			}
 
-			
+
 
 			//Mouse Input
-			int mouseX{}, mouseY{};
+			int mouseX = 0, mouseY = 0;
+
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			float rotationSpeed{ 1.5f };
+			const float rotationSpeed = 1.5f;
 
 			const bool isRightMousePressed{ mouseState == SDL_BUTTON_X1 };
 			const bool isLeftMousePressed{ mouseState == SDL_BUTTON_LEFT };
 			const bool areBothButtonsPressed{ mouseState == SDL_BUTTON_X2 };
+
 			//RMB + Mouse Move X
-			
+
 			if (isRightMousePressed && mouseX)
 			{
 				totalYaw += TO_RADIANS * rotationSpeed * deltaTime * mouseX;
@@ -121,13 +124,12 @@ namespace dae
 				origin += step * deltaTime * up.Normalized() * mouseY;
 			}
 
-
 			const Matrix cameraToWorld = this->CalculateCameraToWorld();
 
 			origin += cameraToWorld.TransformVector(movementDirection) * deltaTime;
 
 
-			Matrix rotMat
+			const Matrix rotMat
 			{
 			Matrix::CreateRotation(totalPitch,totalYaw, 0.f)
 			};

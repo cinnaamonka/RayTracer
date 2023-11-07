@@ -32,26 +32,25 @@ namespace dae
 		void CycleLightingMode();
 
 	private:
-		SDL_Window* m_pWindow{};
+		SDL_Window* m_pWindow = {};
 
-		SDL_Surface* m_pBuffer{};
-		uint32_t* m_pBufferPixels{};
+		SDL_Surface* m_pBuffer = {};
+		uint32_t* m_pBufferPixels = {};
 
 		enum class LightingMode
 		{
+			Combined,
 			ObservedArea,
 			Radiance,
-			BRDF,
-			Combined
-
+			BRDF
 		};
 
-		LightingMode m_CurrentLightingMode = { LightingMode::ObservedArea };
+		LightingMode m_CurrentLightingMode = { LightingMode::Combined };
 
 
-		int m_Width{};
-		int m_Height{};
+		int m_Width;
+		int m_Height;
 
-		bool m_ShadowsEnabled = true;
+		bool m_ShadowsEnabled;
 	};
 }

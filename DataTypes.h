@@ -9,18 +9,18 @@ namespace dae
 #pragma region GEOMETRY
 	struct Sphere
 	{
-		Vector3 origin{};
-		float radius{};
+		Vector3 origin = {};
+		float radius = {};
 
-		unsigned char materialIndex{ 0 };
+		unsigned char materialIndex = { 0 };
 	};
 
 	struct Plane
 	{
-		Vector3 origin{};
-		Vector3 normal{};
+		Vector3 origin = {};
+		Vector3 normal = {};
 
-		unsigned char materialIndex{ 0 };
+		unsigned char materialIndex = { 0 };
 	};
 
 	enum class TriangleCullMode
@@ -44,14 +44,14 @@ namespace dae
 			normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
 		}
 
-		Vector3 v0{};
-		Vector3 v1{};
-		Vector3 v2{};
+		Vector3 v0 = {};
+		Vector3 v1 = {};
+		Vector3 v2 = {};
 
-		Vector3 normal{};
+		Vector3 normal = {};
 
-		TriangleCullMode cullMode{};
-		unsigned char materialIndex{};
+		TriangleCullMode cullMode = {};
+		unsigned char materialIndex = {};
 	};
 
 	struct TriangleMesh
@@ -74,16 +74,16 @@ namespace dae
 			UpdateTransforms();
 		}
 
-		std::vector<Vector3> positions{};
-		std::vector<Vector3> normals{};
-		std::vector<int> indices{};
-		unsigned char materialIndex{};
+		std::vector<Vector3> positions = {};
+		std::vector<Vector3> normals = {};
+		std::vector<int> indices = {};
+		unsigned char materialIndex = {};
 
 		TriangleCullMode cullMode{ TriangleCullMode::BackFaceCulling };
 
-		Matrix rotationTransform{};
-		Matrix translationTransform{};
-		Matrix scaleTransform{};
+		Matrix rotationTransform = {};
+		Matrix translationTransform = {};
+		Matrix scaleTransform = {};
 
 		Vector3 minAABB;
 		Vector3 maxAABB;
@@ -91,8 +91,8 @@ namespace dae
 		Vector3 transformedMinAABB;
 		Vector3 transformedMaxAABB;
 
-		std::vector<Vector3> transformedPositions{};
-		std::vector<Vector3> transformedNormals{};
+		std::vector<Vector3> transformedPositions = {};
+		std::vector<Vector3> transformedNormals = {};
 
 		void Translate(const Vector3& translation)
 		{
@@ -233,32 +233,32 @@ namespace dae
 
 	struct Light
 	{
-		Vector3 origin{};
-		Vector3 direction{};
-		ColorRGB color{};
-		float intensity{};
+		Vector3 origin = {};
+		Vector3 direction = {};
+		ColorRGB color = {};
+		float intensity = {};
 
-		LightType type{};
+		LightType type = {};
 	};
 #pragma endregion
 #pragma region MISC
 	struct Ray
 	{
-		Vector3 origin{};
-		Vector3 direction{};
+		Vector3 origin = {};
+		Vector3 direction = {};
 
-		float min{ 0.0001f };
-		float max{ FLT_MAX };
+		float min = 0.0001f;
+		float max = FLT_MAX;
 	};
 
 	struct HitRecord
 	{
-		Vector3 origin{};
-		Vector3 normal{};
+		Vector3 origin = {};
+		Vector3 normal = {};
 		float t = FLT_MAX;
 
-		bool didHit{ false };
-		unsigned char materialIndex{ 0 };
+		bool didHit = false;
+		unsigned char materialIndex = 0;
 	};
 #pragma endregion
 }
