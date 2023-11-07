@@ -29,40 +29,33 @@ namespace dae {
 	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
 	{
 
+		HitRecord hitRecord = {};
 		for (const Sphere& sphere : m_SphereGeometries)
 		{
-			HitRecord hit{};
-			GeometryUtils::HitTest_Sphere(sphere, ray, hit);
+			GeometryUtils::HitTest_Sphere(sphere, ray, hitRecord);
 			//choosing the closest intersection point to camera
-			if (hit.t < closestHit.t)
+			if (hitRecord.t < closestHit.t)
 			{
-				closestHit = hit;
+				closestHit = hitRecord;
 
 			}
-
 		}
 		for (const Plane& plane : m_PlaneGeometries)
-		{
-			HitRecord hit{};
-			GeometryUtils::HitTest_Plane(plane, ray, hit);
+		{	
+			GeometryUtils::HitTest_Plane(plane, ray, hitRecord);
 			//choosing the closest intersection point to camera
-			if (hit.t < closestHit.t)
+			if (hitRecord.t < closestHit.t)
 			{
-				closestHit = hit;
-
+				closestHit = hitRecord;
 			}
 		}
 		for (const TriangleMesh& mesh : m_TriangleMeshGeometries)
 		{
-			HitRecord hit{};
-
-			GeometryUtils::HitTest_TriangleMesh(mesh, ray, hit);
+			GeometryUtils::HitTest_TriangleMesh(mesh, ray, hitRecord);
 			//choosing the closest intersection point to camera
-			if (hit.t < closestHit.t)
+			if (hitRecord.t < closestHit.t)
 			{
-
-				closestHit = hit;
-
+				closestHit = hitRecord;
 			}
 
 		}
@@ -253,7 +246,7 @@ namespace dae {
 		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
 		m_pBunnyMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("lowpoly_bunny2.obj",
+		Utils::ParseOBJ("Resources/lowpoly_bunny2.obj",
 
 			m_pBunnyMesh->positions,
 			m_pBunnyMesh->normals,
@@ -300,7 +293,7 @@ namespace dae {
 		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
 		m_pLowpolyMan = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("lowpoly_man.obj",
+		Utils::ParseOBJ("Resources/lowpoly_man.obj",
 
 			m_pLowpolyMan->positions,
 			m_pLowpolyMan->normals,

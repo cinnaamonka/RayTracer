@@ -109,19 +109,19 @@ namespace dae
 				totalPitch += TO_RADIANS * mouseY * rotationSpeed * deltaTime;
 			}
 			//LMB + Mouse Move Y
-			if (isLeftMousePressed && mouseY)
+			if (isLeftMousePressed && mouseY)    
 			{
-				origin -= step * deltaTime * forward.Normalized() * mouseY;
+				origin -= step * deltaTime * forward.Normalized() * static_cast<float>(mouseY);
 			}
 			//LMB + Mouse Move X
 			if (isLeftMousePressed && mouseX)
 			{
 				totalYaw += TO_RADIANS * rotationSpeed * deltaTime * mouseX;
-			}
+			} 
 			//(LMB + RMB + Mouse Move Y)
 			if (areBothButtonsPressed && mouseY)
-			{
-				origin += step * deltaTime * up.Normalized() * mouseY;
+			{ 
+				origin += step * deltaTime * up.Normalized() * static_cast<float>(mouseY);
 			}
 
 			const Matrix cameraToWorld = this->CalculateCameraToWorld();

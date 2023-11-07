@@ -68,7 +68,6 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-
 			const float dividend = Square(roughness);
 
 			const float dotNHSquared = Square(Vector3::Dot(n, h));
@@ -77,7 +76,7 @@ namespace dae
 
 			const float c = (dotNHSquared * b) + 1;
 
-			const float divisor = M_PI * Square(c);
+			const float divisor = static_cast<float>(M_PI) * Square(c);
 
 			const float N = Square(dividend) / divisor;
 
@@ -101,7 +100,7 @@ namespace dae
 
 			return G;
 		}
-
+		 
 		/**
 		 * \brief BRDF Geometry Function >> Smith (Direct Lighting)
 		 * \param n Normal of the surface

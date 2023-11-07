@@ -46,13 +46,12 @@ int main(int argc, char* args[])
 	const auto pRenderer = new Renderer(pWindow);
 
 	const auto pScene = new Scene_W4_ReferenceScene();
+	//const auto pScene = new Scene_W4_BunnyScene();
+	//const auto pScene = new Scene_LowpolyMan();
 	pScene->Initialize();
 
 	//Start loop
 	pTimer->Start();
-
-	// Start Benchmark
-	 pTimer->StartBenchmark();
 
 	float printTimer = 0.f;
 	bool isLooping = true;
@@ -71,13 +70,20 @@ int main(int argc, char* args[])
 			case SDL_KEYUP:
 				if (e.key.keysym.scancode == SDL_SCANCODE_X)
 					takeScreenshot = true;
+				
 
 				if (e.key.keysym.scancode == SDL_SCANCODE_F2)
 					pRenderer->ToggleShadows();
-			
+				
+
 				if (e.key.keysym.scancode == SDL_SCANCODE_F3)
 					pRenderer->CycleLightingMode();
+				
+
+				if (e.key.keysym.scancode == SDL_SCANCODE_F6)
+					pTimer->StartBenchmark();
 				break;
+
 			case SDL_MOUSEWHEEL:
 				if (e.wheel.y > 0)
 				{
@@ -100,7 +106,9 @@ int main(int argc, char* args[])
 
 		//--------- Timer ---------
 		pTimer->Update();
+
 		printTimer += pTimer->GetElapsed();
+
 		if (printTimer >= 1.f)
 		{
 			printTimer = 0.f;
