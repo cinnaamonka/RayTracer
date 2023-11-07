@@ -159,157 +159,10 @@ namespace dae {
 		m_Materials.push_back(pMaterial);
 		return static_cast<unsigned char>(m_Materials.size() - 1);
 	}
-#pragma endregion
-#pragma endregion
-
-#pragma region SCENE W1
-	void Scene_W1::Initialize()
-	{
-		//default: Material id0 >> SolidColor Material (RED)
-		constexpr unsigned char matId_Solid_Red = 0;
-		const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
-
-		const unsigned char matId_Solid_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });
-		const unsigned char matId_Solid_Green = AddMaterial(new Material_SolidColor{ colors::Green });
-		const unsigned char matId_Solid_Magenta = AddMaterial(new Material_SolidColor{ colors::Magenta });
-
-		//Spheres
-		AddSphere({ -25.f, 0.f, 100.f }, 50.f, matId_Solid_Red);
-		AddSphere({ 25.f, 0.f, 100.f }, 50.f, matId_Solid_Blue);
-
-		//Plane
-		AddPlane({ -75.f, 0.f, 0.f }, { 1.f, 0.f,0.f }, matId_Solid_Green);
-		AddPlane({ 75.f, 0.f, 0.f }, { -1.f, 0.f,0.f }, matId_Solid_Green);
-		AddPlane({ 0.f, -75.f, 0.f }, { 0.f, 1.f,0.f }, matId_Solid_Yellow);
-		AddPlane({ 0.f, 75.f, 0.f }, { 0.f, -1.f,0.f }, matId_Solid_Yellow);
-		AddPlane({ 0.f, 0.f, 125.f }, { 0.f, 0.f,-1.f }, matId_Solid_Magenta);
-	}
-#pragma endregion
-
-#pragma region SCENE W2
-	void Scene_W2::Initialize()
-	{
-		m_Camera.origin = { 0.f,3.f,-9.f };
-		m_Camera.fovAngle = 45.f;
-
-		//default: Material id0 >> SolidColor Material (RED)
-
-		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, 0.57f, 0.57f }, 1.f));
-
-		const auto matCT_GrayRoughMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, 1.f));
-		const auto matCT_GrayMediumMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, .6f));
-		const auto matCT_GraySmoothMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, .1f));
-
-		const auto matCT_GrayRoughPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, 1.f));
-		const auto matCT_GrayMediumPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .6f));
-		const auto matCT_GraySmoothPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .1f));
-
-		//	const auto matCT_GraySmoothPlastic = AddMaterial(new Material_Lambert()
-
-			//Plane
-		AddPlane(Vector3{ 0.f, 0.f, 10.f }, Vector3{ 0.f, 0.f, -1.f }, matLambert_GrayBlue);
-		AddPlane(Vector3{ 0.f, 0.f, 0.f }, Vector3{ 0.f, 1.f, 0.f }, matLambert_GrayBlue);
-		AddPlane(Vector3{ 0.f, 10.f, 0.f }, Vector3{ 0.f, -1.f, 0.f }, matLambert_GrayBlue);
-		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue);
-		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue);
-
-		//Spheres
-		AddSphere(Vector3{ -1.75f, 3.f, 0.f }, .75f, matCT_GrayRoughPlastic);//верхний ряд 
-		AddSphere(Vector3{ 0.f, 3.f, 0.f }, .75f, matCT_GrayMediumPlastic);
-		AddSphere(Vector3{ 1.75f, 3.f, 0.f }, .75f, matCT_GraySmoothPlastic);
 
 
-		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);//нижний 
-		AddSphere({ 0.0f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
-		AddSphere({ 1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothMetal);
-
-
-
-
-		//Light
-		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
-		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
-		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
-
-	}
-#pragma endregion 
-#pragma region SCENE W3
-	void Scene_W3::Initialize()
-	{
-		m_Camera.origin = { 0.f, 1.f, -5.f };
-		m_Camera.fovAngle = 45.f;
-
-		//default: Material id0 >> SolidColor Material (RED)
-		const auto matLambertRed = AddMaterial(new Material_Lambert(colors::Red, 1.f));
-		const auto matLambertBlue = AddMaterial(new Material_Lambert(colors::Blue, 1.f));
-		const auto matLambertYellow = AddMaterial(new Material_Lambert(colors::Yellow, 1.f));
-
-		//Spheres
-		AddSphere({ -.75f, 1.f, .0f }, 1.f, matLambertRed);
-		AddSphere({ .75f, 1.f, .0f }, 1.f, matLambertBlue);
-
-		//Plane
-		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, matLambertYellow);
-
-		//Light
-		AddPointLight({ 0.f, 5.f, 5.f }, 25.f, colors::White);
-		AddPointLight({ 0.f, 2.5f, -5.f }, 25.f, colors::White);
-		AddPointLight({ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ 0.34f,0.47f,0.68f });
-
-	}
-#pragma endregion
-
-#pragma region SCENE W4
-	void Scene_W4::Initialize()
-	{
-		m_Camera.origin = { 0.f,1.f,-5.f };
-		m_Camera.fovAngle = 45.f;
-		m_Camera.totalYaw = 0;
-		//m_Camera.totalYaw = M_PI;
-
-		//Materials
-		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, 0.57f, 0.57f }, 1.f));
-		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
-
-		//Planes
-		AddPlane(Vector3{ 0.f, 0.f, 10.f }, Vector3{ 0.f, 0.f, -1.f }, matLambert_GrayBlue); //BACK
-		AddPlane(Vector3{ 0.f, 0.f, 0.f }, Vector3{ 0.f, 1.f, 0.f }, matLambert_GrayBlue); //BOTTOM
-		AddPlane(Vector3{ 0.f, 10.f, 0.f }, Vector3{ 0.f, -1.f, 0.f }, matLambert_GrayBlue); //TOP
-		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
-		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
-
-		////OBJ
-		////===
-		pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		Utils::ParseOBJ("Resources/simple_cube.obj",
-			//Utils::ParseOBJ("Resources/simple_object.obj",
-			pMesh->positions,
-			pMesh->normals,
-			pMesh->indices);
-
-		//No need to Calculate the normals, these are calculated inside the ParseOBJ function
-		pMesh->UpdateTransforms();
-
-		pMesh->Scale({ .7f,.7f,.7f });
-		pMesh->Translate({ .0f,1.f,0.f });
-
-
-		//Light
-		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
-		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
-		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
-
-	}
-	void Scene_W4::Update(Timer* pTimer)
-	{
-		Scene::Update(pTimer);
-
-		pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		pMesh->UpdateTransforms();
-	}
-#pragma endregion
-#pragma region SCENE W4_Reference
-	void Scene_W4_Reference::Initialize()
+#pragma region SCENE Raytracer_REFERENCE
+	void Scene_W4_ReferenceScene::Initialize()
 	{
 		sceneName = "Reference Scene";
 		m_Camera.origin = { 0,3,-9 };
@@ -366,7 +219,7 @@ namespace dae {
 		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
 		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
 	}
-	void Scene_W4_Reference::Update(Timer* pTimer)
+	void Scene_W4_ReferenceScene::Update(Timer* pTimer)
 	{
 		Scene::Update(pTimer);
 		for (const auto mesh : m_Meshes)
@@ -378,7 +231,7 @@ namespace dae {
 
 	}
 #pragma endregion
-#pragma region SCENE Scene_W4_BunnyScene
+#pragma region SCENE Raytracer_BUNNY
 	void Scene_W4_BunnyScene::Initialize()
 	{
 		sceneName = "Bunny Scene";
@@ -423,6 +276,53 @@ namespace dae {
 
 		m_pBunnyMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
 		m_pBunnyMesh->UpdateTransforms();
+	}
+#pragma endregion
+#pragma region SCENE Raytracer_LOWPOLYMAN
+	void Scene_LowpolyMan::Initialize()
+	{
+		sceneName = "Lowpoly man";
+		m_Camera.origin = { 0,3,-9 };
+		m_Camera.fovAngle = 45.f;
+
+		const auto matCT_GrayRoughMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, 1.f));
+		const auto matCT_GrayMediumMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, .6f));
+		const auto matCT_GraySmoothMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, .1f));
+		const auto matCT_GrayRoughPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, 1.f));
+		const auto matCT_GrayMediumPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .6f));
+		const auto matCT_GraySmoothPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .1f));
+
+		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, 0.57f, 0.57f }, 1.f));
+		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
+
+		AddPlane(Vector3{ 0.f, 0.f, 10.f }, Vector3{ 0.f, 0.f, -1.f }, matLambert_GrayBlue); //BACK
+		AddPlane(Vector3{ 0.f, 0.f, 0.f }, Vector3{ 0.f, 1.f, 0.f }, matLambert_GrayBlue); //BOTTOM
+		AddPlane(Vector3{ 0.f, 10.f, 0.f }, Vector3{ 0.f, -1.f, 0.f }, matLambert_GrayBlue); //TOP
+		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
+		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
+
+		m_pLowpolyMan = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+		Utils::ParseOBJ("lowpoly_man.obj",
+
+			m_pLowpolyMan->positions,
+			m_pLowpolyMan->normals,
+			m_pLowpolyMan->indices);
+
+		m_pLowpolyMan->Scale({ 2.f,2.f,2.f });
+		m_pLowpolyMan->UpdateAABB();
+
+		m_pLowpolyMan->UpdateTransforms();
+
+		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
+		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
+		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
+	}
+	void Scene_LowpolyMan::Update(Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		m_pLowpolyMan->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_pLowpolyMan->UpdateTransforms();
 	}
 #pragma endregion
 }

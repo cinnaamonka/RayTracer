@@ -63,74 +63,16 @@ namespace dae
 		unsigned char AddMaterial(Material* pMaterial);
 	};
 
-	//+++++++++++++++++++++++++++++++++++++++++
-	//WEEK 1 Test Scene
-	class Scene_W1 final : public Scene
+	class Scene_W4_ReferenceScene final : public Scene
 	{
 	public:
-		Scene_W1() = default;
-		~Scene_W1() override = default;
+		Scene_W4_ReferenceScene() = default;
+		~Scene_W4_ReferenceScene() override = default;
 
-		Scene_W1(const Scene_W1&) = delete;
-		Scene_W1(Scene_W1&&) noexcept = delete;
-		Scene_W1& operator=(const Scene_W1&) = delete;
-		Scene_W1& operator=(Scene_W1&&) noexcept = delete;
-
-		void Initialize() override;
-	};
-
-	class Scene_W2 final : public Scene
-	{
-	public:
-		Scene_W2() = default;
-		~Scene_W2() override = default;
-
-		Scene_W2(const Scene_W2&) = delete;
-		Scene_W2(Scene_W2&&) noexcept = delete;
-		Scene_W2& operator=(const Scene_W2&) = delete;
-		Scene_W2& operator=(Scene_W2&&) noexcept = delete;
-
-		void Initialize() override;
-	};
-	class Scene_W3 final : public Scene
-	{
-	public:
-		Scene_W3() = default;
-		~Scene_W3() override = default;
-
-		Scene_W3(const Scene_W3&) = delete;
-		Scene_W3(Scene_W3&&) noexcept = delete;
-		Scene_W3& operator=(const Scene_W3&) = delete;
-		Scene_W3& operator=(Scene_W3&&) noexcept = delete;
-
-		void Initialize() override;
-	};
-	class Scene_W4 final : public Scene
-	{
-	public:
-		Scene_W4() = default;
-		~Scene_W4() override = default;
-
-		Scene_W4(const Scene_W4&) = delete;
-		Scene_W4(Scene_W4&&) noexcept = delete;
-		Scene_W4& operator=(const Scene_W4&) = delete;
-		Scene_W4& operator=(Scene_W4&&) noexcept = delete;
-
-		void Initialize() override;
-		void Update(Timer* pTimer) override;
-	private:
-		TriangleMesh* pMesh = nullptr;
-	};
-	class Scene_W4_Reference final : public Scene
-	{
-	public:
-		Scene_W4_Reference() = default;
-		~Scene_W4_Reference() override = default;
-
-		Scene_W4_Reference(const Scene_W4_Reference&) = delete;
-		Scene_W4_Reference(Scene_W4_Reference&&) noexcept = delete;
-		Scene_W4_Reference& operator=(const Scene_W4_Reference&) = delete;
-		Scene_W4_Reference& operator=(Scene_W4_Reference&&) noexcept = delete;
+		Scene_W4_ReferenceScene(const Scene_W4_ReferenceScene&) = delete;
+		Scene_W4_ReferenceScene(Scene_W4_ReferenceScene&&) noexcept = delete;
+		Scene_W4_ReferenceScene& operator=(const Scene_W4_ReferenceScene&) = delete;
+		Scene_W4_ReferenceScene& operator=(Scene_W4_ReferenceScene&&) noexcept = delete;
 
 		void Initialize() override;
 		void Update(Timer* pTimer) override;
@@ -152,5 +94,21 @@ namespace dae
 		void Update(Timer* pTimer) override;
 	private:
 		TriangleMesh* m_pBunnyMesh = nullptr;
+	};
+	class Scene_LowpolyMan final : public Scene
+	{
+	public:
+		Scene_LowpolyMan() = default;
+		~Scene_LowpolyMan() override = default;
+
+		Scene_LowpolyMan(const Scene_LowpolyMan&) = delete;
+		Scene_LowpolyMan(Scene_LowpolyMan&&) noexcept = delete;
+		Scene_LowpolyMan& operator=(const Scene_LowpolyMan&) = delete;
+		Scene_LowpolyMan& operator=(Scene_LowpolyMan&&) noexcept = delete;
+
+		void Initialize() override;
+		void Update(Timer* pTimer) override;
+	private:
+		TriangleMesh* m_pLowpolyMan = nullptr;
 	};
 }

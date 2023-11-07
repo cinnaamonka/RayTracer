@@ -67,45 +67,69 @@ namespace dae
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 			if (pKeyboardState[SDL_SCANCODE_W])
 			{
-				movementDirection.z = step;
+				origin += (step * deltaTime) * forward.Normalized();
 			}
 			if (pKeyboardState[SDL_SCANCODE_S])
 			{
-				movementDirection.z = -step;
+				origin -= (step * deltaTime) * forward.Normalized();
 			}
 			if (pKeyboardState[SDL_SCANCODE_D])
 			{
 
-				movementDirection.x = step;
+				origin += (step * deltaTime) * right.Normalized();
 			}
 			if (pKeyboardState[SDL_SCANCODE_A])
 			{
-				movementDirection.x = -step;
+				origin -= (step * deltaTime) * right.Normalized();
 			}
 
-			const Matrix cameraToWorld = this->CalculateCameraToWorld();
-
-			origin += cameraToWorld.TransformVector(movementDirection) * deltaTime;
+			
 
 			//Mouse Input
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			float rotationSpeed{ 1.15f };
+			float rotationSpeed{ 1.5f };
 
-
-			if (mouseState == SDL_BUTTON_LEFT)
+			const bool isRightMousePressed{ mouseState == SDL_BUTTON_X1 };
+			const bool isLeftMousePressed{ mouseState == SDL_BUTTON_LEFT };
+			const bool areBothButtonsPressed{ mouseState == SDL_BUTTON_X2 };
+			//RMB + Mouse Move X
+			
+			if (isRightMousePressed && mouseX)
 			{
-				totalYaw += TO_RADIANS * float(mouseY) * rotationSpeed;
-
-				totalPitch += TO_RADIANS * float(mouseX) * rotationSpeed;
-
+				totalYaw += TO_RADIANS * rotationSpeed * deltaTime * mouseX;
 			}
+			//RMB + Mouse Move Y
+			if (isRightMousePressed && mouseY)
+			{
+				totalPitch += TO_RADIANS * mouseY * rotationSpeed * deltaTime;
+			}
+			//LMB + Mouse Move Y
+			if (isLeftMousePressed && mouseY)
+			{
+				origin -= step * deltaTime * forward.Normalized() * mouseY;
+			}
+			//LMB + Mouse Move X
+			if (isLeftMousePressed && mouseX)
+			{
+				totalYaw += TO_RADIANS * rotationSpeed * deltaTime * mouseX;
+			}
+			//(LMB + RMB + Mouse Move Y)
+			if (areBothButtonsPressed && mouseY)
+			{
+				origin += step * deltaTime * up.Normalized() * mouseY;
+			}
+
+
+			const Matrix cameraToWorld = this->CalculateCameraToWorld();
+
+			origin += cameraToWorld.TransformVector(movementDirection) * deltaTime;
 
 
 			Matrix rotMat
 			{
-			Matrix::CreateRotation(totalYaw,totalPitch, 0.f)
+			Matrix::CreateRotation(totalPitch,totalYaw, 0.f)
 			};
 
 
